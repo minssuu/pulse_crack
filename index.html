@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>PULSE · 펄스 세계관 아카이브</title>
+<style>
+:root{
+  --bg:#030711;--panel:#07111f;--line:rgba(105,210,255,.18);--line2:rgba(105,210,255,.38);
+  --blue:#5ad7ff;--blue2:#b7f1ff;--text:#edf9ff;--muted:#9dafc1;--muted2:#62778c;
+  --red:#ff4f67;--red2:#ffb0bb;--amber:#ffb84a;--amber2:#ffe0a3;
+  --r:4px;/* 기본 border-radius — 이전의 22px를 대체 */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR","Pretendard","Segoe UI",sans-serif;overflow-x:hidden}
+button,input{font-family:inherit}
+body:before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse 155px 110px at var(--mx,50vw) var(--my,18vh),rgba(35,142,255,.085),rgba(40,212,255,.045) 34%,transparent 76%),radial-gradient(ellipse 90px 60px at var(--mx2,52vw) var(--my2,20vh),rgba(125,229,255,.038),transparent 74%),radial-gradient(circle at 50% -10%,rgba(90,215,255,.14),transparent 34%),linear-gradient(180deg,#06111f,#030711 44%,#01030a)}
+body:after{content:"";position:fixed;inset:0;z-index:-1;opacity:.28;pointer-events:none;background-image:linear-gradient(rgba(128,224,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(128,224,255,.075) 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(to bottom,transparent,#000 10%,#000 88%,transparent)}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .9s cubic-bezier(.22,.68,0,1),transform .9s cubic-bezier(.22,.68,0,1)}
+.reveal.visible{opacity:1;transform:none}
+.reveal-d1{transition-delay:.08s}.reveal-d2{transition-delay:.16s}.reveal-d3{transition-delay:.24s}.reveal-d4{transition-delay:.32s}
+
+/* ── APP SHELL ── */
+.app{max-width:480px;margin:0 auto;min-height:100vh;border-left:1px solid rgba(128,224,255,.07);border-right:1px solid rgba(128,224,255,.07);background:linear-gradient(180deg,rgba(3,7,17,.94),rgba(3,7,17,.97));box-shadow:0 0 0 1px rgba(255,255,255,.02),0 0 46px rgba(0,0,0,.22);padding-bottom:148px;transition:opacity .55s ease,transform .55s ease}
+.app.switching{opacity:.12;transform:translateY(14px)}
+
+/* ── TOPBAR ── */
+.topbar{height:62px;position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(3,7,17,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.iconbtn{width:38px;height:38px;border:1px solid var(--line);background:rgba(90,215,255,.04);border-radius:3px;color:var(--blue);display:grid;place-items:center;cursor:pointer;transition:border-color .2s,background .2s}
+.iconbtn:hover{border-color:var(--line2);background:rgba(90,215,255,.1)}
+.brand{display:flex;align-items:center;justify-content:center;flex:1;padding:0 12px;cursor:pointer}
+.brand img{height:34px;max-width:230px;object-fit:contain;filter:drop-shadow(0 0 18px rgba(90,215,255,.15))}
+
+/* ── INTRO ── */
+.intro{position:fixed;inset:0;z-index:300;background:#01040b;display:grid;place-items:center;overflow:hidden;transition:opacity .85s ease,visibility .85s ease}
+.intro.hidden{opacity:0;visibility:hidden}
+.intro-gate{position:absolute;left:50%;top:48%;width:360px;height:520px;transform:translate(-50%,-50%)}
+.smoke{position:absolute;inset:0;border-radius:50%;opacity:.75;mix-blend-mode:screen;filter:blur(24px);background:radial-gradient(ellipse at 50% 40%,rgba(80,230,255,.5),transparent 22%),radial-gradient(ellipse at 45% 65%,rgba(58,147,255,.35),transparent 38%),radial-gradient(ellipse at 55% 50%,rgba(196,244,255,.22),transparent 50%);animation:smokeFlow 7s ease-in-out infinite alternate}
+.smoke.s2{opacity:.55;filter:blur(32px);animation-duration:10s;animation-delay:-2s;transform:rotate(18deg) scale(.9)}
+.smoke.s3{opacity:.42;filter:blur(40px);animation-duration:12s;animation-delay:-4s;transform:rotate(-20deg) scale(1.12)}
+@keyframes smokeFlow{0%{transform:translate(-22px,18px) scale(.88) rotate(-6deg);border-radius:44% 56% 48% 52%}50%{transform:translate(18px,-10px) scale(1.05) rotate(7deg);border-radius:58% 42% 54% 46%}100%{transform:translate(8px,16px) scale(.96) rotate(-10deg);border-radius:49% 51% 42% 58%}}
+.intro-core{position:absolute;left:50%;top:50%;width:110px;height:420px;transform:translate(-50%,-50%);background:linear-gradient(180deg,transparent,rgba(201,251,255,.95) 42%,rgba(63,219,255,.7) 52%,transparent 88%);clip-path:polygon(48% 0,54% 0,61% 42%,100% 50%,61% 56%,53% 100%,47% 100%,39% 56%,0 50%,39% 42%);filter:blur(3px);opacity:.9;animation:coreFlicker 3.2s ease-in-out infinite alternate}
+@keyframes coreFlicker{50%{opacity:.55;filter:blur(6px)}100%{opacity:.92;filter:blur(2px)}}
+.intro-content{position:relative;z-index:3;width:min(78vw,390px);text-align:center}
+.intro-logo{width:min(72vw,330px);margin:0 auto 34px;display:block;filter:drop-shadow(0 0 30px rgba(75,217,255,.45))}
+.enter-btn{border:1px solid rgba(126,225,255,.48);background:linear-gradient(180deg,rgba(90,215,255,.13),rgba(90,215,255,.04));color:#eaffff;border-radius:3px;padding:13px 22px;font-size:14px;letter-spacing:.16em;box-shadow:0 0 26px rgba(90,215,255,.16);cursor:pointer;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,0 100%);transition:background .2s,box-shadow .2s}
+.enter-btn:hover{background:linear-gradient(180deg,rgba(90,215,255,.22),rgba(90,215,255,.08));box-shadow:0 0 40px rgba(90,215,255,.3)}
+
+/* ── HERO ── */
+.hero{position:relative;height:292px;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,7,17,.08),rgba(3,7,17,.32) 40%,#030711 100%)}
+.hero-title{position:absolute;left:18px;right:18px;bottom:24px;z-index:2}
+.hero-title h1{font-size:25px;line-height:1.35;font-weight:700;letter-spacing:-.045em;color:#f2fbff;text-shadow:0 16px 40px rgba(0,0,0,.75)}
+
+/* ── SECTION ── */
+section{padding:26px 16px;border-bottom:1px solid rgba(128,224,255,.09)}
+.section-head{margin-bottom:17px}
+.section-head .label{font-size:10px;letter-spacing:.28em;color:var(--blue);margin-bottom:7px;font-weight:700}
+.section-head h2{font-size:24px;letter-spacing:-.04em}
+.section-head p,.desc{font-size:14px;line-height:1.7;color:var(--muted);margin-top:8px}
+.section-text{font-size:14px;line-height:1.9;color:rgba(224,242,255,.82)}
+.section-text p{margin-top:13px}.section-text p:first-child{margin-top:0}
+.section-text strong{color:#fff}
+.quote{border-left:2px solid var(--blue);padding:10px 0 10px 12px!important;color:var(--blue2)!important;background:rgba(90,215,255,.04);border-radius:0 2px 2px 0}
+.final-line{font-size:15px;font-weight:700;color:#ebfbff!important}
+
+/* ── CARDS — SF각진 스타일 ── */
+.card,.soft-card{
+  border:1px solid var(--line);
+  background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.015));
+  border-radius:var(--r);
+  padding:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,.28),inset 0 0 0 0.5px rgba(255,255,255,.04);
+  position:relative;
+}
+.card::before,.soft-card::before{
+  content:"";position:absolute;top:0;left:0;width:12px;height:12px;
+  border-top:1px solid var(--blue);border-left:1px solid var(--blue);
+  border-radius:0;pointer-events:none;
+}
+.card::after,.soft-card::after{
+  content:"";position:absolute;bottom:0;right:0;width:12px;height:12px;
+  border-bottom:1px solid var(--blue);border-right:1px solid var(--blue);
+  border-radius:0;pointer-events:none;
+}
+.soft-card{background:rgba(255,255,255,.02)}
+
+/* ── CHIPS / ENTRIES ── */
+.chips{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.chipbtn,.entry,.mini-card{
+  border:1px solid var(--line);
+  background:rgba(90,215,255,.03);
+  color:rgba(214,247,255,.9);
+  border-radius:var(--r);
+  padding:13px 12px;
+  text-align:left;cursor:pointer;
+  transition:transform .38s ease,border-color .38s ease,background .38s ease,box-shadow .38s ease;
+  position:relative;overflow:hidden;
+}
+.chipbtn::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(90,215,255,.07),transparent 60%);opacity:0;transition:opacity .22s}
+.chipbtn:hover::after{opacity:1}
+.chipbtn:hover,.entry:hover,.mini-card:hover,.person-card:hover,.docbtn:hover{
+  transform:translateY(-2px);
+  border-color:rgba(90,215,255,.52);
+  background:rgba(90,215,255,.07);
+  box-shadow:0 4px 20px rgba(90,215,255,.12);
+}
+.chipbtn b{display:block}.chipbtn span{font-size:11px;color:var(--muted2)}
+
+/* ── GRID3 / FACTION MINI ── */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.faction-mini{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+  border-radius:var(--r);
+  padding:12px 8px;text-align:center;cursor:pointer;color:var(--text);
+  transition:transform .38s ease,border-color .38s ease,box-shadow .38s ease;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+}
+.faction-mini:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 6px 24px rgba(90,215,255,.15)}
+.faction-mini img{width:68px;height:68px;object-fit:contain}
+.faction-mini b{display:block;font-size:12px;margin-top:8px}
+.faction-mini span{display:block;font-size:8px;letter-spacing:.14em;color:var(--muted2);margin-top:4px}
+
+/* ── TAGS / BADGES ── */
+.guild-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.badge,.guild-tags span,.tag{
+  display:inline-block;border:1px solid var(--line);
+  background:rgba(90,215,255,.07);border-radius:2px;
+  padding:4px 7px;font-size:11px;color:#dffaff;letter-spacing:.05em;
+}
+
+/* ── LIST / ENTRY ── */
+.list-cards{display:grid;gap:8px}
+.entry{width:100%;display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.02)}
+.entry .mark{width:36px;height:36px;border:1px solid var(--line2);border-radius:2px;display:grid;place-items:center;color:var(--blue);flex:none}
+.entry b{display:block;font-size:15px}.entry small{display:block;margin-top:3px;font-size:11px;color:var(--muted2)}
+
+
+.kw-table{display:grid;gap:6px;margin-top:12px}
+.kw-table-row{display:grid;grid-template-columns:86px 1fr;gap:10px;border:1px solid rgba(126,225,255,.12);background:rgba(255,255,255,.02);border-radius:2px;padding:10px}
+.kw-table-row b{font-size:13px;color:#e8fbff;line-height:1.45}
+.kw-table-row span{font-size:13px;color:var(--muted);line-height:1.62}
+@media(max-width:390px){.kw-table-row{grid-template-columns:76px 1fr;gap:8px}.kw-table-row b,.kw-table-row span{font-size:12px}}
+.rich-table{display:grid;gap:8px;margin-top:12px}
+.rich-table-row{display:grid;grid-template-columns:110px 1fr;gap:12px;border:1px solid rgba(126,225,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));border-radius:2px;padding:11px 12px;align-items:start}
+.rich-table-row b{font-size:13px;line-height:1.5;color:#effcff}
+.rich-table-row span{font-size:13px;line-height:1.68;color:var(--muted)}
+@media(max-width:390px){.rich-table-row{grid-template-columns:88px 1fr;gap:10px}.rich-table-row b,.rich-table-row span{font-size:12px}}
+.kw-note{margin-top:10px;font-size:12px;line-height:1.65;color:var(--muted2);font-style:italic}
+.loot-table{display:grid;gap:7px;margin-top:12px}
+.loot-row{display:grid;grid-template-columns:92px 1fr 1fr;gap:10px;border:1px solid rgba(126,225,255,.14);background:rgba(255,255,255,.02);border-radius:2px;padding:10px}
+.loot-row b{font-size:13px;line-height:1.5;color:#effcff}
+.loot-row span{font-size:12px;line-height:1.62;color:var(--muted)}
+@media(max-width:390px){.loot-row{grid-template-columns:1fr;gap:5px}.loot-row b{font-size:13px}.loot-row span{font-size:12px}}
+.stage-table{display:grid;gap:8px;margin-top:12px}
+.stage-row{display:grid;grid-template-columns:82px 76px 1fr;gap:10px;align-items:center;border:1px solid rgba(126,225,255,.14);background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));border-radius:2px;padding:10px 11px}
+.stage-row b{font-size:13px;color:#effcff;line-height:1.45}
+.stage-percent{display:inline-grid;place-items:center;min-width:54px;padding:4px 7px;border:1px solid rgba(90,215,255,.42);background:rgba(90,215,255,.1);color:var(--blue2);font-size:12px;font-weight:800;border-radius:2px;letter-spacing:.04em}
+.stage-row span:last-child{font-size:13px;line-height:1.62;color:var(--muted)}
+@media(max-width:390px){.stage-row{grid-template-columns:1fr;gap:6px}.stage-percent{width:max-content}}
+
+
+
+
+/* ── DETAIL BLOCK ── */
+.detail-block{display:none;animation:fadeUp .7s cubic-bezier(.22,.68,0,1) both}
+.detail-block.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ── BACK BTN ── */
+.back{
+  border:1px solid var(--line);background:rgba(255,255,255,.03);
+  color:var(--blue2);border-radius:2px;padding:8px 12px;
+  margin-bottom:14px;cursor:pointer;
+  transition:border-color .2s,background .2s;letter-spacing:.06em;font-size:13px;
+}
+.back:hover{border-color:var(--line2);background:rgba(90,215,255,.06)}
+
+/* ── MINI TABLE / ROW ── */
+.info-list{margin-top:12px;display:grid;gap:8px}
+.info-list li{margin-left:18px;color:var(--muted);font-size:14px;line-height:1.7}
+.mini-table{display:grid;gap:6px;margin-top:12px}
+.row{
+  display:grid;grid-template-columns:90px 1fr;gap:10px;
+  border:1px solid rgba(126,225,255,.1);
+  background:rgba(255,255,255,.02);border-radius:2px;padding:9px;
+}
+.row b{font-size:12px;color:#dffaff}.row span{font-size:13px;color:var(--muted);line-height:1.55}
+
+/* ── FACTION HERO ── */
+.faction-hero{position:relative;min-height:285px;display:flex;align-items:flex-end;overflow:hidden}
+.faction-hero img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.faction-hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#030711 0%,rgba(3,7,17,.78) 32%,rgba(3,7,17,.34) 72%,rgba(3,7,17,.08) 100%),linear-gradient(180deg,rgba(3,7,17,.04),rgba(3,7,17,.28) 58%,#030711 96%);z-index:1}
+.faction-head{position:relative;z-index:2;padding:30px 16px 20px}
+.faction-title{display:flex;align-items:center;gap:12px}
+.faction-title img{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 4px 18px rgba(0,0,0,.35))}
+.faction-title h1{font-size:30px;letter-spacing:-.05em}
+.faction-title small{display:block;color:rgba(232,243,255,.72);letter-spacing:.18em;margin-top:2px;font-size:10px}
+.faction-copy{font-size:13px;line-height:1.82;color:rgba(237,244,255,.92);margin-top:14px;max-width:360px;text-shadow:0 4px 18px rgba(0,0,0,.45)}
+
+/* ── THEME OVERRIDES ── */
+.omen-theme{--line:rgba(255,79,103,.24);--line2:rgba(255,79,103,.5);--blue:var(--red);--blue2:var(--red2)}
+.abyss-theme{--line:rgba(255,184,74,.25);--line2:rgba(255,184,74,.5);--blue:var(--amber);--blue2:var(--amber2)}
+
+
+.omen-theme .section-head .label,.omen-theme .dept-card h3,.omen-theme .badge,.omen-theme .tag{color:var(--blue)}
+.omen-theme .card::before,.omen-theme .soft-card::before{border-color:var(--blue)}
+.omen-theme .card::after,.omen-theme .soft-card::after{border-color:var(--blue)}
+.abyss-theme .section-head .label,.abyss-theme .dept-card h3,.abyss-theme .badge,.abyss-theme .tag{color:var(--blue)}
+.abyss-theme .card::before,.abyss-theme .soft-card::before{border-color:var(--blue)}
+.abyss-theme .card::after,.abyss-theme .soft-card::after{border-color:var(--blue)}
+
+/* ── RULES / DEPT CARDS ── */
+.rules{display:grid;gap:8px}
+.rule{border-top:1px solid rgba(158,221,255,.1);padding-top:9px;color:var(--muted);font-size:13px;line-height:1.6}
+.dept-card{
+  border:1px solid var(--line);background:rgba(255,255,255,.025);
+  border-radius:var(--r);padding:14px;margin-bottom:8px;
+  transition:border-color .2s,background .2s;
+}
+.dept-card:hover{border-color:var(--line2)}
+.dept-card h3{font-size:17px}.dept-card small{color:var(--muted2);font-size:11px}
+.dept-card p{color:var(--muted);font-size:13px;line-height:1.7;margin-top:7px}
+
+/* ── PERSON CARD ── */
+.person-card{
+  display:flex;align-items:center;gap:13px;
+  border:1px solid var(--line);background:rgba(255,255,255,.025);
+  border-radius:var(--r);padding:13px;width:100%;color:var(--text);
+  cursor:pointer;text-align:left;
+  transition:transform .38s ease,border-color .38s ease,box-shadow .38s ease;
+}
+.person-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(90,215,255,.12)}
+.person-card img{width:72px;height:88px;border-radius:2px;object-fit:cover;object-position:top;border:1px solid rgba(126,225,255,.15);background:#fff}
+.person-card .rank{display:block;margin-top:8px;color:var(--blue2);font-size:12px}
+.person-card .name{font-size:20px;font-weight:700;margin-top:2px}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:22px}
+.timeline:before{content:"";position:absolute;left:7px;top:5px;bottom:10px;width:1px;background:linear-gradient(var(--blue),rgba(90,215,255,.12),transparent)}
+.tl{position:relative;margin-bottom:24px}
+.tl:before{content:"";position:absolute;left:-21px;top:4px;width:11px;height:11px;border:1px solid var(--blue);background:#06101f;border-radius:1px;box-shadow:0 0 14px rgba(90,215,255,.5)}
+.tl .year{font-size:12px;color:var(--blue);font-weight:700;letter-spacing:.08em}
+.tl h3{font-size:17px;margin-top:4px}.tl p{font-size:14px;line-height:1.7;color:var(--muted);margin-top:6px}
+
+/* ── DOC BTN ── */
+.docbtn{
+  display:flex;gap:12px;align-items:center;
+  border:1px solid var(--line);background:rgba(255,255,255,.022);
+  border-radius:var(--r);padding:13px;width:100%;text-align:left;
+  color:var(--text);cursor:pointer;margin-bottom:8px;
+  transition:border-color .2s,background .2s,transform .2s;
+}
+.docbtn:hover{border-color:var(--line2);transform:translateX(3px)}
+.doc-icon{width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:2px;color:var(--blue);flex:none}
+.docbtn b{font-size:14px}.docbtn span{display:block;font-size:11px;color:var(--muted2);margin-top:4px}
+
+/* ── OUTFIT IMG ── */
+.outfit-img{width:100%;border-radius:2px;border:1px solid var(--line);margin-top:12px}.keyword-free-img{display:block;width:100%;border:0;border-radius:2px;margin:18px 0 8px;box-shadow:none}
+.outfit-click{display:block;width:100%;padding:0;border:0;background:transparent;cursor:pointer;text-align:left}
+.outfit-click .outfit-img{transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease}
+.outfit-click:hover .outfit-img{transform:translateY(-2px);border-color:var(--line2);box-shadow:0 8px 28px rgba(90,215,255,.12)}
+.modal-outfit-img{width:100%;max-height:70vh;object-fit:contain;border-radius:2px;border:1px solid var(--line);background:rgba(255,255,255,.03);margin-bottom:16px}
+
+/* ── GUILD CARDS ── */
+.guild-list{display:grid;gap:8px}
+.guild-card-btn{
+  border:1px solid var(--line);background:rgba(255,255,255,.022);
+  color:var(--text);border-radius:var(--r);padding:16px;
+  text-align:left;cursor:pointer;
+  transition:border-color .38s,background .38s,transform .38s;
+}
+.guild-card-btn:hover{border-color:var(--line2);background:rgba(90,215,255,.05);transform:translateY(-2px)}
+.lumen-members-title{font-size:17px;margin:18px 0 10px;color:#fff;letter-spacing:-.02em}
+
+/* ── GENERATOR ── */
+.generator{text-align:center}
+.machine{
+  border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;background:rgba(255,255,255,.02);margin-top:14px;
+  position:relative;overflow:hidden;
+}
+.machine::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--blue);border-left:1px solid var(--blue)}
+.machine::after{content:"";position:absolute;bottom:0;right:0;width:10px;height:10px;border-bottom:1px solid var(--blue);border-right:1px solid var(--blue)}
+.gen-result{margin-top:14px;border-top:1px solid rgba(126,225,255,.12);padding-top:14px;color:#eafcff;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;position:relative;overflow:hidden}
+.gen-result b{font-size:22px;transition:all .3s}
+.result-text{position:relative;z-index:2;transition:opacity .28s ease,filter .28s ease,transform .28s ease}
+.gen-scan{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 0%,rgba(90,215,255,.18) 50%,transparent 100%);height:40%;transform:translateY(-100%);animation:none}
+.gen-scan.running{animation:scanDown .6s ease-in-out infinite}
+@keyframes scanDown{0%{transform:translateY(-100%)}100%{transform:translateY(300%)}}
+.pulse-ring{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:0;border:2px solid var(--blue);transform:scale(0.3);transition:none}
+.pulse-ring.fire{animation:pulseRingOut .7s ease-out forwards}
+@keyframes pulseRingOut{0%{opacity:.9;transform:scale(.2)}70%{opacity:.3}100%{opacity:0;transform:scale(1.6)}}
+.measure{
+  margin-top:14px;border:1px solid var(--line2);
+  background:rgba(90,215,255,.07);color:#eaffff;
+  padding:11px 18px;border-radius:2px;cursor:pointer;
+  letter-spacing:.08em;font-size:13px;
+  transition:background .2s,box-shadow .2s,transform .15s;
+  clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));
+}
+.measure:hover{background:rgba(90,215,255,.14);box-shadow:0 0 20px rgba(90,215,255,.2)}
+.measure:active{transform:scale(.97)}
+
+/* ── MODAL ── */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(10px);z-index:220;display:none;align-items:center;justify-content:center;padding:18px}
+.modal.open{display:flex;animation:modalIn .28s ease both}
+@keyframes modalIn{from{opacity:0}to{opacity:1}}
+.modal-card{width:min(430px,100%);max-height:88vh;overflow:auto;border:1px solid var(--line2);border-radius:var(--r);background:#06101d;box-shadow:0 24px 80px rgba(0,0,0,.6);animation:cardIn .3s cubic-bezier(.22,.68,0,1.2) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.modal-head b{font-size:15px}
+.modal-close{border:1px solid var(--line);background:rgba(255,255,255,.03);color:#fff;border-radius:2px;width:34px;height:34px;cursor:pointer;transition:border-color .2s,background .2s}
+.modal-close:hover{border-color:var(--line2);background:rgba(255,255,255,.07)}
+.modal-body{padding:16px}
+.modal-portrait{width:100%;max-height:520px;object-fit:cover;object-position:top;border-radius:2px;border:1px solid var(--line);background:#fff;margin-bottom:14px}
+.modal-body h2{font-size:27px;margin-bottom:2px}.modal-body .role{color:var(--blue2);font-size:13px;margin-bottom:12px}
+.modal-table{display:grid;gap:6px}.modal-table .row{grid-template-columns:96px 1fr}
+.modal-body p{font-size:14px;line-height:1.78;color:var(--muted);margin:8px 0}
+.modal-body .seal{font-size:12px;color:var(--muted2);margin-top:16px}
+.modal-body .summary{border-left:2px solid var(--blue);padding-left:10px;color:#dffaff;margin-bottom:13px}
+
+/* ── MENU / DRAWER ── */
+.menu-panel{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);backdrop-filter:blur(7px);display:none}
+.menu-panel.open{display:block;animation:fadeIn .22s ease both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.drawer{width:82%;max-width:320px;height:100%;background:#071018;border-right:1px solid var(--line);padding:16px;animation:slideRight .28s cubic-bezier(.22,.68,0,1.2) both}
+@keyframes slideRight{from{transform:translateX(-28px);opacity:0}to{transform:none;opacity:1}}
+.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.drawer-head h2{font-size:22px}
+.navitem{width:100%;display:flex;gap:10px;align-items:center;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:2px;padding:13px 12px;color:var(--text);margin-top:8px;cursor:pointer;transition:border-color .2s,background .2s}
+.navitem:hover{border-color:var(--line2);background:rgba(90,215,255,.06)}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{position:fixed;left:0;right:0;bottom:68px;z-index:60;pointer-events:none}
+.bottom-nav-inner{max-width:480px;margin:0 auto;padding:0 8px}
+.navgrid{
+  pointer-events:auto;height:62px;display:grid;grid-template-columns:repeat(6,1fr);gap:2px;
+  border:1px solid var(--line);background:rgba(3,7,17,.95);backdrop-filter:blur(16px);
+  border-radius:4px;padding:4px;
+}
+.navgrid button{border:0;background:none;color:var(--muted2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;border-radius:2px;cursor:pointer;transition:color .2s,background .2s}
+.navgrid button.active{background:rgba(90,215,255,.12);color:#e9fbff}
+.navgrid button:hover:not(.active){background:rgba(90,215,255,.06);color:var(--blue2)}
+.nav-icon{width:19px;height:19px;border:1.5px solid currentColor;border-radius:3px;display:block;position:relative;opacity:.9}
+
+/* ── PLAYER ── */
+.player{position:fixed;left:0;right:0;bottom:0;z-index:65;background:rgba(3,7,17,.96);backdrop-filter:blur(18px);border-top:1px solid var(--line)}
+.player-inner{max-width:480px;margin:0 auto;height:68px;padding:0 14px;display:flex;align-items:center;gap:12px}
+.playbtn{width:40px;height:40px;border:1px solid var(--line);background:rgba(90,215,255,.1);color:#eafcff;border-radius:2px;display:grid;place-items:center;cursor:pointer;transition:border-color .2s,background .2s}
+.playbtn:hover{border-color:var(--line2);background:rgba(90,215,255,.18)}
+.seek{flex:1;height:3px;accent-color:#76e4ff}
+.volume{width:72px;accent-color:#76e4ff}
+
+
+.nav-icon.guild{border-radius:2px;transform:rotate(45deg)}
+.nav-icon.guild:before{content:"";position:absolute;left:5px;top:5px;width:6px;height:6px;border:1.5px solid currentColor;border-radius:1px}
+.nav-icon.key{border-radius:50%;}
+.nav-icon.key:before{content:"";position:absolute;left:50%;top:2px;bottom:2px;border-left:1.5px solid currentColor;transform:translateX(-50%)}
+.nav-icon.key:after{content:"";position:absolute;left:2px;right:2px;top:50%;border-top:1.5px solid currentColor;transform:translateY(-50%)}
+.nav-icon.cit,.nav-icon.om,.nav-icon.abyss,.nav-icon.world{width:20px;height:20px;border:0;border-radius:0;background:currentColor;-webkit-mask:center/contain no-repeat;mask:center/contain no-repeat}
+.nav-icon.cit{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1.5l7 2.7v6.3c0 5-3.2 9.5-7 12.1-3.8-2.6-7-7.1-7-12.1V4.2l7-2.7zm0 4.2c-.5 0-.9.4-.9.9V9H8.7c-.5 0-.9.4-.9.9s.4.9.9.9h2.4v4.3c0 .5.4.9.9.9s.9-.4.9-.9v-4.3h2.4c.5 0 .9-.4.9-.9s-.4-.9-.9-.9h-2.4V6.6c0-.5-.4-.9-.9-.9z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1.5l7 2.7v6.3c0 5-3.2 9.5-7 12.1-3.8-2.6-7-7.1-7-12.1V4.2l7-2.7zm0 4.2c-.5 0-.9.4-.9.9V9H8.7c-.5 0-.9.4-.9.9s.4.9.9.9h2.4v4.3c0 .5.4.9.9.9s.9-.4.9-.9v-4.3h2.4c.5 0 .9-.4.9-.9s-.4-.9-.9-.9h-2.4V6.6c0-.5-.4-.9-.9-.9z'/%3E%3C/svg%3E")}
+.nav-icon.om{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1l7 7-2.2 2.2 2.1 7.6-3.6-2.5L12 23l-3.3-7.7-3.6 2.5 2.1-7.6L5 8l7-7zm0 4.3L8.2 9H10v4h4V9h1.8L12 5.3z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1l7 7-2.2 2.2 2.1 7.6-3.6-2.5L12 23l-3.3-7.7-3.6 2.5 2.1-7.6L5 8l7-7zm0 4.3L8.2 9H10v4h4V9h1.8L12 5.3z'/%3E%3C/svg%3E")}
+.nav-icon.abyss{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1.5c2.8 0 5.3 1.1 7.1 2.9l-2.5 2.5c-1.1-1-2.7-1.7-4.6-1.7-1.9 0-3.5.7-4.6 1.7L4.9 4.4C6.7 2.6 9.2 1.5 12 1.5zm7.1 3.7v12.2c0 .8-.6 1.4-1.4 1.4H6.3c-.8 0-1.4-.6-1.4-1.4V5.2l2.9 2.9v7.8h8.4V8.1l2.9-2.9zM12 9.2a2.3 2.3 0 100 4.6 2.3 2.3 0 000-4.6zM9.6 20.5h4.8v2H9.6z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1.5c2.8 0 5.3 1.1 7.1 2.9l-2.5 2.5c-1.1-1-2.7-1.7-4.6-1.7-1.9 0-3.5.7-4.6 1.7L4.9 4.4C6.7 2.6 9.2 1.5 12 1.5zm7.1 3.7v12.2c0 .8-.6 1.4-1.4 1.4H6.3c-.8 0-1.4-.6-1.4-1.4V5.2l2.9 2.9v7.8h8.4V8.1l2.9-2.9zM12 9.2a2.3 2.3 0 100 4.6 2.3 2.3 0 000-4.6zM9.6 20.5h4.8v2H9.6z'/%3E%3C/svg%3E")}
+.nav-icon.world{-webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1.7a10.3 10.3 0 100 20.6 10.3 10.3 0 000-20.6zm0 1.9c1.4 0 2.9 1.1 4 3H8c1.1-1.9 2.6-3 4-3zm-5.3 4.9h10.6c.4 1 .7 2.2.8 3.5H5.9c.1-1.3.4-2.5.8-3.5zm-.8 5.4h12.2c-.1 1.3-.4 2.5-.8 3.5H6.7c-.4-1-.7-2.2-.8-3.5zm2.1 5.4H16c-1.1 1.9-2.6 3-4 3s-2.9-1.1-4-3zm2-1.9h4c.6-.9 1.1-2.2 1.5-3.5H8.5c.4 1.3.9 2.6 1.5 3.5zm0-7.3h4c-.6-.9-1.1-2.2-1.5-3.5H8.5c.4 1.3.9 2.6 1.5 3.5z'/%3E%3C/svg%3E");mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='black' d='M12 1.7a10.3 10.3 0 100 20.6 10.3 10.3 0 000-20.6zm0 1.9c1.4 0 2.9 1.1 4 3H8c1.1-1.9 2.6-3 4-3zm-5.3 4.9h10.6c.4 1 .7 2.2.8 3.5H5.9c.1-1.3.4-2.5.8-3.5zm-.8 5.4h12.2c-.1 1.3-.4 2.5-.8 3.5H6.7c-.4-1-.7-2.2-.8-3.5zm2.1 5.4H16c-1.1 1.9-2.6 3-4 3s-2.9-1.1-4-3zm2-1.9h4c.6-.9 1.1-2.2 1.5-3.5H8.5c.4 1.3.9 2.6 1.5 3.5zm0-7.3h4c-.6-.9-1.1-2.2-1.5-3.5H8.5c.4 1.3.9 2.6 1.5 3.5z'/%3E%3C/svg%3E")}
+
+@media(max-width:390px){
+  .hero{height:270px}.hero-title h1{font-size:22px}.brand img{height:30px}
+  .grid3{gap:6px}.faction-mini img{width:60px;height:60px}
+  .person-card img{width:64px;height:80px}.person-card .name{font-size:18px}
+}
+
+
+.generator-section,.generator-section .section-head{text-align:center}
+.meter-note{font-size:12px;color:var(--muted2);margin-top:8px;margin-bottom:12px;letter-spacing:.02em}
+.generator .gen-meta{white-space:nowrap;font-size:14px;color:var(--blue2)}
+
+/* ── v17 patch: smoother keyword transition / full faction theme ── */
+.keyword-detail-anim{animation:keywordSoftIn .58s cubic-bezier(.22,.68,0,1) both;filter:none}
+@keyframes keywordSoftIn{from{opacity:0;transform:translateY(12px);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+.keyword-list-fade{animation:keywordListFade .32s ease both}
+@keyframes keywordListFade{from{opacity:1;filter:blur(0)}to{opacity:0;filter:blur(4px)}}
+.omen-theme .section-head .label,.omen-theme .dept-card h3,.omen-theme .rule,.omen-theme .doc-icon{color:var(--red2)!important}
+.omen-theme .card::before,.omen-theme .soft-card::before{border-color:var(--red)!important}
+.omen-theme .card::after,.omen-theme .soft-card::after{border-color:var(--red)!important}
+.abyss-theme .section-head .label,.abyss-theme .dept-card h3,.abyss-theme .rule,.abyss-theme .doc-icon{color:var(--amber2)!important}
+.abyss-theme .card::before,.abyss-theme .soft-card::before{border-color:var(--amber)!important}
+.abyss-theme .card::after,.abyss-theme .soft-card::after{border-color:var(--amber)!important}
+.gen-role{font-size:24px;font-weight:800;color:#eaffff;letter-spacing:.05em}
+.gen-divider{width:70%;height:1px;background:linear-gradient(90deg,transparent,var(--line2),transparent);margin:10px 0}
+.gen-meta{font-size:13px;color:var(--muted);line-height:1.7}
+.lumen-logo{width:58px;height:58px;object-fit:contain;filter:drop-shadow(0 4px 18px rgba(0,0,0,.35))}
+
+</style>
+<meta name="description" content="게이트와 펄스가 일상이 된 2042년. 시타델, 오멘, 심연재림교와 민간 길드를 기록하는 PULSE 세계관 아카이브.">
+<link rel="stylesheet" href="renewal.css?v=37">
+</head>
+<body>
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-label="PULSE 아카이브 입장"><div class="intro-corner">PULSE ARCHIVE · 2042</div><button class="intro-skip" onclick="enterSite(true)">바로 입장 ↗</button><div class="intro-gate" aria-hidden="true"><div class="smoke"></div><div class="smoke s2"></div><div class="intro-core"></div></div><div class="intro-content"><p class="intro-eyebrow">BEYOND THE GATE</p><img class="intro-logo" src="pulse-logo.png" alt="PULSE"><p class="intro-subtitle">균열 너머, 당신의 파장이 시작되는 곳.</p><button class="enter-btn" onclick="enterSite()">펄스 공명하기 <span>→</span></button></div><p class="intro-bottom">SENTINEL × GUIDE<br>입장하면 배경음악이 재생됩니다.</p></div>
+<div class="app" id="app"><header class="topbar"><button class="brand" onclick="showPage('world')" aria-label="PULSE 세계관 홈"><img src="pulse-logo.png" alt="PULSE"></button><span class="header-note">KR / ARCHIVE</span><button class="iconbtn" onclick="goBack()" aria-label="이전 페이지">←</button><button class="iconbtn" onclick="openMenu()" aria-label="전체 메뉴">☰</button></header><nav class="bottom-nav" aria-label="주요 페이지"><div class="bottom-nav-inner"><div class="navgrid" id="navgrid"></div></div></nav>
+<main id="page-world" class="page"><div class="hero"><img class="hero-bg" src="배경1.png" alt="한강 공명사태"><div class="hero-title"><h1>균열과 펄스가 일상이 된 시대</h1></div></div><section><div class="section-head"><div class="label">WORLD STORY</div><h2>2042년, 대한민국 서울.</h2></div><div class="section-text"><p>게이트는 어느 날 갑자기 열린 문이 아니었다. 세계는 오래전부터 조금씩 젖어가고 있었다.</p><p>2027년 무렵부터 세계 곳곳에서는 설명되지 않는 이상 현상이 보고되었다. 지도와 맞지 않는 건물, 같은 꿈을 꾸는 사람들, 며칠씩 사라지는 항로, 원인불명의 감각 이상, 괴생물 목격담, 그리고 아직 이름 붙지 않은 능력 사고들이 있었다. 각국 정부와 기업은 그것을 기상 이상, 테러, 신종 질병, 실험 사고로 덮었다.</p><p><strong>그러나 2031년, 서울 한강 상공에서 하늘이 찢어졌다.</strong></p><p>서울 한강 공명사태는 인류가 게이트와 펄스의 존재를 더 이상 부정할 수 없게 만든 최초의 공인 대형 사건이었다. 균열 너머에서 흘러나온 것은 이세계의 생태와, 인간의 신경계와 육체를 바꾸는 초상 파장 <strong>펄스</strong>였다. 펄스에 안정적으로 적응한 일부 인간은 <strong>센티넬</strong>과 <strong>가이드</strong>로 발현했고, 적응하지 못한 인간은 침식되거나 변이되었다.</p><p class="quote">인류는 게이트를 외부의 침공으로 불렀지만, 일부 연구자들은 다르게 말했다. 게이트는 누군가가 연 문이 아니라, 이미 오래전부터 젖어가던 현실이 끝내 찢어진 상처라고.</p><p>초기 인류는 게이트와 이계종에게 속수무책으로 밀렸으나, 곧 센티넬과 가이드의 힘으로 게이트를 제어하고 이계종을 격퇴할 수 있다는 사실을 알아냈다. 이후 각국은 자국 내 발현자와 게이트를 관리하기 위한 특수기관을 설립했으며, 대한민국 역시 국가 차원의 특수재난 관리기관을 세웠다.</p><p>2042년 현재, 게이트와 이능력자는 더 이상 비일상이 아니다. 센티넬과 가이드는 국가 안보의 핵심 전력이자, 재난 대응 인력이며, 동시에 대중문화와 산업의 중심에 선 존재가 되었다. S급 센티넬은 연예인 못지않은 인기와 영향력을 가진다. 민간 길드 소속 센티넬과 가이드는 게이트 임무, 광고, 방송, 물류, 의료, 경호, 재난 구조 등 다양한 분야에서 활동하며 거대한 산업을 형성하고 있다.</p><p class="final-line">세계는 멸망하지 않았다. 대신 멸망을 산업으로 만드는 법을 배웠다.</p></div></section><section><div class="section-head"><div class="label">KEYWORDS</div><h2>핵심 키워드</h2></div><div class="chips" id="keyword-buttons"></div></section><section><div class="section-head"><div class="label">POWER STRUCTURE</div><h2>3대 세력</h2></div><div class="grid3" id="home-factions"></div></section><section><div class="section-head"><div class="label">PRIVATE GUILD</div><h2>길드</h2></div><div class="soft-card guild-card"><h3>국가공인길드</h3><p class="desc">국가가 모든 게이트와 펄스 관련 사건을 직접 처리할 수 없기 때문에, 일정 기준을 충족한 민간 길드가 임무 일부를 위탁받는다. 민간 길드는 게이트 공략뿐 아니라 펄스 관련 사건, 이단 제압, 시민구조, 의료, 물류, 경호, 방송, 광고 등을 맡으며 2042년의 거대한 산업 축이 되었다.</p><button class="measure" onclick="showPage('guild')">자세히 알아보기</button></div><div class="section-head" style="margin-top:22px"><div class="label">FIELD MAP</div><h2>지도</h2></div><img class="outfit-img" src="지도.png" alt="펄스 세계관 지도"></section><section><div class="section-head"><div class="label">TIMELINE</div><h2>주요 연표</h2></div><div class="timeline" id="timeline"></div></section><section class="generator-section"><div class="section-head"><div class="label">PULSE METER</div><h2>펄스 측정기</h2><p>당신은 펄스의 파장에 의해 각성되었습니다.<br>지금 펄스 측정기를 통해 당신의 펄스를 확인하세요.</p></div><div class="card generator"><p class="meter-note"><em>해당 설정을 유저노트에 적고 플레이하세요</em></p><div class="machine"><div class="gen-result" id="gen-result"><div class="gen-scan"></div><div class="pulse-ring"></div><div class="result-text"><div class="gen-role" id="gen-role">센티넬 / 가이드</div><div class="gen-divider"></div><div class="gen-meta" id="gen-meta">등급 / 능력</div></div></div></div><button class="measure" onclick="measurePulse()">측정하기</button></div></section></main>
+<main id="page-keywords" class="page" style="display:none"><section><div class="section-head"><div class="label">KEYWORD ARCHIVE</div><h2>키워드</h2><p>펄스 세계를 이루는 주요 개념을 항목별로 열람한다.</p></div><div class="list-cards" id="keyword-list"></div></section><section id="keyword-detail-section" style="display:none"><div id="keyword-detail"></div></section></main><main id="page-citadel" class="page" style="display:none"></main><main id="page-omen" class="page" style="display:none"></main><main id="page-abyss" class="page" style="display:none"></main><main id="page-guild" class="page" style="display:none"></main></div>
+<div class="player" id="player"><div class="player-inner"><audio id="bgm" loop preload="metadata" playsinline></audio><button class="playbtn" onclick="toggleAudio()" id="playbtn" aria-label="배경음악 재생">▶</button><div class="track-label" aria-live="polite"><b id="track-title" hidden aria-hidden="true"></b><small id="track-context">세계관 · BGM</small></div><input id="seek" class="seek" type="range" min="0" max="100" value="0" oninput="seekAudio(this.value)" aria-label="음악 재생 위치"><input class="volume" type="range" min="0" max="1" step=".01" value=".1" oninput="setVolume(this.value)" aria-label="배경음악 볼륨"><button class="audio-settings" onclick="openMusicSettings()" aria-label="세력별 배경음악 설정">음악 설정</button></div></div>
+<div class="menu-panel" id="menu" onclick="closeMenu()"><div class="drawer" onclick="event.stopPropagation()"><div class="drawer-head"><div><small style="color:var(--blue);letter-spacing:.25em">PULSE</small><h2>펄스 아카이브</h2></div><button class="iconbtn" onclick="closeMenu()" aria-label="메뉴 닫기">×</button></div><div id="drawer-nav"></div><button class="navitem" onclick="openMusicSettings()">♫ 세력별 배경음악 설정</button></div></div><div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick="closeModal()"><div class="modal-card" onclick="event.stopPropagation()"><div class="modal-head"><b id="modal-title">정보</b><button class="modal-close" onclick="closeModal()" aria-label="닫기">×</button></div><div class="modal-body" id="modal-body"></div></div></div>
+<script>
+const NAV=[['world','세계관','world'],['keywords','키워드','key'],['citadel','시타델','cit'],['omen','오멘','om'],['abyss','재림교','abyss'],['guild','길드','guild']];
+const keywordCards=[['pulse','펄스','초상 파장과 발현'],['gate','게이트','차원 균열과 중첩구역'],['species','이계종','이세계 기원 생명체'],['sentinel','센티넬','펄스를 방출하는 발현자'],['guide','가이드','파장을 안정화하는 발현자'],['pairing','가이딩&페어링','센티넬과 가이드의 결속']];
+const timeline=[['2027–2030','전조기','실종, 공간 왜곡, 집단 악몽, 괴생물 목격이 보고되기 시작한다.'],['2031','서울 한강 공명사태','서울 한강 상공에 대형 균열이 발생하고, 게이트와 펄스가 공인된다.'],['2032–2034','등록제와 격리기','발현자 등록제가 시작되고 폭주 사고와 가이드 과부하가 사회문제로 떠오른다.'],['2035–2037','제도화기','등급제, 면허제, 가이딩 규정, 민간 길드 허가제가 만들어진다.'],['2038–2040','산업화기','센티넬·가이드 산업이 방송, 광고, 의료, 경호, 물류로 확장된다.'],['2041–2042','균열된 안정기','표면적 안정 아래 차별, 비리, 오멘 실험, 심연재림교 의식이 확산된다.']];
+const keywordDetails={
+pulse:{title:'펄스',sub:'PARANORMAL WAVE',body:['펄스는 이세계에서 흘러들어온 초상 파장이다.','센티넬과 가이드의 발현, 게이트 주변의 왜곡을 유발한다.','파장에 안정적으로 적응한 인간은 특수능력이 발현되지만, 불안정하게 노출된 인간은 신체 변형, 정신 오염, 괴물화, 기억 손상, 현실 왜곡 증세를 겪을 수 있다.'],sections:[['링커',['__IMAGE__:펄스단말기.png','링커는 법정 의무 장비다. 모든 발현자는 외부 활동, 임무 수행, 능력 사용, 게이트 진입 시 링커를 반드시 착용해야 한다.','센티넬: 심장 부근 착용 필수. 흉부 하네스, 전투복 슬롯, 제복 안쪽에 장착한다. 미착용 시 능력 사용 금지.','가이드: 상시 지참 필수. 손목형, 목걸이형, 카드형 등 형태는 자유롭지만 현장 투입 시 즉시 확인 가능한 위치에 착용.','민간 발현자: 능력 사용 면허 소지자는 외부 활동 시 링커 지참 의무가 있다. 미지참 상태의 능력 사용은 불법.','센티넬은 펄스 출력이 생명과 직결되어 있기 때문에 안전을 위해 흉부 착용이 의무화되어 있다.','가이드는 감지와 안정화가 중심이므로 착용 위치는 자유롭지만, 빠른 확인을 위해 손목형이나 목걸이형을 선호한다.','링커를 고의로 제거하거나, 신호를 차단하거나, 불법 개조 링커로 대체하는 행위는 중범죄로 분류된다.']]]},
+gate:{title:'게이트',sub:'DIMENSIONAL FRACTURE',body:['지구와 이세계가 펄스 공명으로 맞물리며 생기는 차원의 균열.','게이트 내부는 현실이 이세계에 침식된 장소다.','게이트 발생 3일 안에 게이트를 파괴하지 않으면 두 세계의 문이 연결되어 이계종이 현실에 나온다.'],sections:[['게이트 이미지',['__FREEIMAGE__:게이트.png']],['발생 원리',['펄스 침윤','현실장 균열','이세계 압력','게이트 변질','균열핵 / 코어']],['작전수행',['게이트 내부에서는 단순한 전투력만으로 생존할 수 없다.','공간이 계속 변하고, 종종 통신이 끊기며, 이계종이 코어를 지킨다.','센티넬은 고농도 펄스 때문에 능력이 강해지는 대신 폭주도 빠르게 상승한다.','등급에 따라 다르지만, 센티넬 2인과 가이드 1인을 한 팀으로 임무하는 것이 보편적이다.','시타델은 B급 이상 게이트 발생 시 현장 통제 및 센티넬 임무 시 필수 가이드 동행을 적용한다.','게이트는 게이트 안의 게이트 코어를 파괴하면 현실로 나가는 문이 생기고, 이후 소멸된다.']],['등급',['D급: 하위 이계종 소수','C급: 군집종 출현 가능','B급: 도시 구역 단위 피해 가능','A급: 고위 이계종 출현','S급: 고위 이계종 및 군단급 개체 출현','재난급: 왕종 또는 현실 법칙 붕괴']]]},
+species:{title:'이계종',sub:'EXTRADIMENSIONAL SPECIES',body:['이계종은 단순 몬스터가 아닌, 이세계의 생태계가 지구의 현실 법칙에 적응하며 나타난 존재들이다. 이세계 기원 생명체 전체를 묶는 행정 용어다.'],sections:[['이계종 정보',['__FREEIMAGE__:이계종 정보.png']],['등급',['D급 하위종','C급 군집종','B급 변이종','A급 고위종','재난급 왕종']],['전리품',['펄스 코어: 고위 이계종에게서 회수되는 고농도 펄스 결정체 / 링커, 장비 강화, 게이트 분석에 활용','코어 파편: 불완전하거나 깨진 코어 조각 / 민간 장비, 불법 개조, 암시장 거래에 활용','이계 결정: 게이트 내부에서 굳은 펄스 결정 / 에너지 저장, 감지 센서에 활용','공명섬유: 이계 생물에서 채취되는 섬유질 / 전투복, 차단 장비에 활용','흑혈: 이계종의 체액 / 독성 연구, 불법 도핑에 활용','잔향막: 정신종이 남긴 막이나 가루 / 정신오염 연구, 환각 실험에 활용','침식골: 변이종·고위종의 뼈나 외골격 / 무기, 방어구, 의식 도구에 활용']]]},
+sentinel:{title:'센티넬',sub:'SENTINEL',body:['센티넬은 펄스에 적응한 인간 중, 펄스를 외부로 방출하거나 현실에 직접 간섭하는 방식으로 능력을 발현한 특수능력자다.','대중에게 센티넬은 영웅이자 스타로 소비되지만, 실제로는 국가에 등록되고 등급과 폭주 위험도까지 관리되는 고위험 발현자다.'],sections:[['특징',['본질: 펄스를 몸 밖으로 방출해 세계에 영향을 주는 발현자','역할: 게이트 공략, 이계종 제압, 재난 구조, 특수 임무 수행','사회적 이미지: 영웅, 스타, 국가전력, 민간 길드의 핵심 자원','위험성: 과부하 시 폭주하여 하나의 재난 현상으로 변할 수 있음']],['등급',['D급: 출력이 낮거나 활용 범위가 좁은 발현자','C급: 일반 실무 운용이 가능한 등급','B급: 전투와 재난 대응에서 활용 가치가 있는 등급','A급: 고위험 게이트 투입이 가능한 상위 전력','S급: 국가 단위 전략 전력','__NOTE__:같은 능력 계열이어도 펄스의 출력과 운용능력에 따라 등급은 달라진다.']],['능력 계열',['초인계: 근력, 속도, 내구, 감각, 재생, 변이, 적응','자연계: 화염, 수류, 빙결, 전격, 풍압, 대지, 금속, 식물, 광휘, 암영, 음파, 독성','정신계: 염동, 감응, 환각, 암시, 기억, 정신방벽, 동조, 예지, 공포, 침묵','치유계: 재생촉진, 정화, 보호막, 완충, 활성, 진통, 봉합, 침식해제, 생명감지','특수계: 공간, 시간, 중력, 확률, 복제, 무효화, 결계, 소환, 정보, 계약, 조율, 침식, 봉인, 개념','__NOTE__:S급 이상의 발현은 국가 기밀로 관리된다.']],['폭주 단계',['1단계 (30%): 두통, 체온 상승, 감각 예민화','2단계 (60%): 의도치 않은 능력 발현','3단계 (80%): 의지와 다르게 능력 분출','4단계 (90%): 자아는 있으나 능력 제어 불가','5단계 (100%): 자아를 잃고 능력 방출']]]},
+guide:{title:'가이드',sub:'GUIDE',body:['가이드는 타인의 펄스 파장을 읽고 안정화하거나 정렬하는 방식으로 능력을 발현한 특수능력자다. 센티넬의 폭주를 막고 게이트 내부의 불안정한 파장을 읽으며, 이계 침식과 정신오염에 대응한다.'],sections:[['특징',['본질: 펄스를 흡수·완충·정렬·차단·동조하는 발현자','역할: 센티넬 안정화, 폭주 예방, 가이딩, 게이트 파장 분석, 침식 대응','사회적 이미지: 센티넬의 파트너, 안정화 인력, 보호 대상, 고급 전문직','위험성: 과부하 시 주변 파장과 정신을 불안정하게 만드는 공명원으로 변할 수 있음','관리 체계: 국가 등록, 가이딩 면허, 상성 검사, 소진 관리, 전속 페어링 심사 대상']],['등급',['D급: 안정화 범위가 좁고 지속 시간이 짧은 가이드','C급: 일반적인 가이딩이 가능한 실무 등급','B급: 중위험 게이트와 민간 길드 임무에 투입 가능','A급: 고위험 게이트와 A급 이상 센티넬의 전담 후보','S급: S급 센티넬 폭주 대응과 심층 가이딩이 가능한 국가전략급 가이드']],['능력 유형',['안정형: 가이딩 시, 센티넬의 폭주 수치와 감정 과열을 낮추는 가장 기본적인 가이드 유형. 진정, 회복, 잔류파 정리에 특화되어 있다.','완충형: 가이딩 시, 센티넬의 능력 반동과 폭주도 일부를 과부하로 대신 받아내는 유형. 고위험 게이트와 S급 센티넬 보조에 자주 투입된다.','동조형: 가이딩 시, 센티넬과 감각·심박·파장을 맞춰 전투 효율을 높이는 유형. 펄스 파장의 범위가 넓어 대부분의 센티넬과 상성이 좋으며, 전속 페어링이나 심층 결속이 발생하기 쉽다.','방벽형: 가이딩 시, 센티넬의 펄스를 직접 제어해 이계 침식, 정신오염, 펄스 역류를 막거나 센티넬의 펄스 방출을 억제하는 유형. 펄스 차단에 특화되어 있다.','증폭형: 가이딩 시, 센티넬의 출력을 안정적으로 끌어올리거나 여러 센티넬의 파장을 묶어 팀 단위 전투력을 높이는 유형. 강력하지만 가이드에게 과부하 위험이 크다.']],['가이드 과부하',['1단계 (30%): 체온 증가, 감각 예민, 펄스 흡수 욕구 증가.','2단계 (60%): 파장 감각 예민, 신체 감각 증폭, 펄스 흡수 욕구 증가.','3단계 (80%): 대상과 감각&신경 공유, 이성 마비, 펄스 흡수 제어 불가.','4단계 (100%): 파장을 무한히 흡수, 펄스 신경계 마비, 의식 상실.']]]},
+pairing:{title:'가이딩&페어링',sub:'GUIDING & PAIRING',body:['가이딩은 센티넬의 펄스 파장을 안정시키는 가이드의 안정화 작업이며, 센티넬의 펄스 과부화로 인한 폭주를 막기 위한 필수적인 과정이다.','페어링은 센티넬과 가이드가 공식적으로 쌍을 이루어 활동하는 제도이다. 동일 가이드와의 반복적인 가이딩은 두 사람의 펄스 공명을 변형시킨다.','결속이 깊어질수록 전투 효율은 높아지지만, 다른 가이드와의 공명률이 낮아져 해당 가이드의 의존 위험도 함께 증가한다.','시타델은 심층 결속 이상을 반드시 신고하도록 규정하고 있다.'],sections:[['상성률 기준',['가이드와 센티넬의 상성률에 따라 가이딩의 효율이 달라진다.','0~30%: 가이딩 비효율, 장기 페어 부적합','31~60%: 일반 임무 가능','61~79%: 우수 페어','80% 이상: 희귀한 고공명 페어. 펄스 파장의 공명도가 높다고 판정되며, 공명도가 높을수록 서로에게 끌림이 강해진다.','96% 이상: 고위험 고상성, 심층 결속 가능성 있음']],['가이딩',['정의: 가이드가 센티넬의 펄스 파장을 읽고, 과부하를 낮추며, 폭주 위험을 안정시키는 행위다.','원리: 센티넬은 능력을 사용할수록 체내 펄스 압력이 상승하고, 이 상태가 지속되면 폭주나 신경계 손상으로 이어질 수 있다.','역할: 가이드는 센티넬의 불안정한 파장을 받아들이고 정렬해, 센티넬이 더 오래 안정적으로 능력을 사용할 수 있도록 돕는다.','폭주 억제: 센티넬의 폭주 위험도를 낮춘다.','출력 안정화: 능력 사용 중 흔들리는 펄스 흐름을 정돈한다.','잔류파 정리: 능력 사용 후 몸에 남은 펄스 피로를 줄인다.','정신 안정: 게이트 노출, 공포, 분노, 정신오염으로 흐트러진 감각을 안정시킨다.','전투 효율 상승: 상성이 좋은 페어일수록 능력 지속 시간과 정확도가 올라간다.']],['가이딩 방식',['접촉 가이딩: 손, 손목, 목, 흉부 등 신체 접촉을 통해 직접 파장을 안정화한다. 닿는 면적이 많고 펄스 공명이 고조되는 접촉일수록 효율이 좋다.','효율 예시: 손잡기, 포옹, 키스, 성관계 순서로 가이딩 효율이 증가한다.','심층 가이딩: 센티넬 펄스의 파장을 쾌락으로 끌어올려 가이드의 파장과 일치시킨 후, 빠르게 가이딩을 진행해 폭주도를 빠르게 안정화한다.']],['결속 방식',['임시 페어링: 임무 단위로 맺는 페어. 임무 종료 후 자동 해제된다.','전속 페어링: 특정 센티넬과 가이드가 장기적으로 묶이는 페어. A급 이상 센티넬에게 주로 적용된다.','결속: 반복 가이딩으로 인해 페어간의 감각과 파장이 깊게 연결된 상태.','심층 결속: 펄스 파장이 거의 일치하는 수준으로 공명하는 거의 영구적인 파장 결속.']],['주의사항',['전속 페어링 이상은 반드시 시타델에 신고해야 한다.','심층 결속이 해제될 경우 양측 모두 심각한 후유증이 남을 수 있다.']]]}
+};
+const factions=[['citadel','시타델','CITADEL','시타델_엠블러.png'],['omen','오멘','OMEN','오멘_엠블럼.png'],['abyss','심연재림교','ABYSS','심연재림교_엠블럼.png']];
+const citadelPeople={minji:{name:'김민지',img:'김민지.png',rows:[['등급','S급 센티넬'],['나이','21세'],['성별','여성'],['능력','염동력(특수계)'],['생일','8월 21일']]},jian:{name:'오지안',img:'오지안.png',rows:[['등급','B급 가이드'],['나이','39세'],['성별','여성'],['유형','방벽형'],['생일','10월 10일'],['결속 센티넬','없음']]}};
+const depts=[['제로라인','최전선전략대응과','재난급 게이트, S급 이계종, 대규모 폭주 사태에 가장 먼저 투입되는 국가 최종 전력','minji'],['크로우','폭주대응관리과','S급 센티넬의 폭주, 과부하, 펄스 역류, 심층 가이딩 담당',null],['옵저버','민간센터감시과','민간 길드와 센터의 계약 위반, 착취, 회계 비리, 미등록 발현자 은닉 조사','jian'],['이클립스','특수범죄대응과','불법 가이딩, 강제 각인, 변칙체 밀매, 고위 센티넬의 은폐 사건 조사',null],['에테르','파장안정관리과','가이드 등록, 파장 안정 훈련, 가이딩 적성 평가, 현장가이드 배치와 소진 관리',null],['가디언','특수재난기동과','일반 게이트 대응, 재난 구조, 민간 지원, 위탁 임무 관리 담당',null]];
+const citadelDocs=[
+['[기밀] 게이트 사고 보고서','CITADEL-2042-0715-A','2급 기밀','2042년 7월 15일, 서울 도심권에서 발생한 B급 잔류 게이트 변질 사고 보고서. 초기 등급은 C급이었으나, 내부 균열핵이 비정상적으로 성장하며 A급 직전까지 상승했다. 민간 길드의 선진입 판단 오류와 오멘 관련 코어 파편 유출 정황이 함께 기록되어 있다.'],
+['제로라인 작전 기록','ZERO-OP-2042-0301','1급 기밀','국가전략 센티넬팀 〈제로라인〉의 S급 게이트 폐쇄 작전 기록. 작전 중 지성종 이계종이 인간 언어를 모방한 사례가 확인되었으며, 현장 투입 센티넬 2명에게 폭주 전조가 발생했다. 크로우 소속 S급 가이드가 긴급 투입되어 작전은 성공 처리되었으나, 전체 영상기록 중 11분 42초가 비공개 처리되었다.'],
+['게이트 등급 분류 기준','GATE-RANK-STANDARD ver.2.1','내부전용','게이트 등급을 산정하는 공식 기준표. 균열 크기, 펄스 농도, 이계종 유입량, 침식률, 민간 피해 가능성, 균열핵 안정도, 왕종 연계 가능성을 종합 평가한다. 2041년 이후 심연재림교의 인공 게이트 개방 사례가 증가하며 ‘의도적 변질 가능성’ 항목이 추가되었다.'],
+['발현자 위험도 재평가 지침','AWAKE-RISK-2042-REV','내부전용','센티넬과 가이드의 등급을 단순 출력이 아닌 폭주 위험도, 결속 가능성, 사회적 영향력까지 포함해 재평가하는 지침. D급 이하 발현자 차별 논란 이후 개정되었으나, 실제 현장에서는 여전히 고출력 발현자 중심으로 자원이 배정되고 있다는 비판이 있다.'],
+['가이드 소진 사고 백서','GUIDE-BURNOUT-2041-W','2급 기밀','민간 길드 소속 가이드들의 과부하·공명 붕괴·강제 심층 가이딩 사례를 정리한 백서. 공식 발표에서는 ‘업무상 과로’로 처리되었으나, 내부 문서에는 불법 전속 페어링과 가이드 소진 한도 조작 정황이 기록되어 있다.'],
+['오멘 관련 변칙체 회수 보고','OMEN-OBJECT-17','1급 기밀','오멘이 사용한 것으로 추정되는 초상 유물 회수 보고서. 유물은 비발현자의 펄스 회로를 강제로 열어주는 성질을 보였으나, 실험 대상 9명 중 7명이 신체 변이 또는 기억 오염을 겪었다. 회수 후 보관된 유물 일부가 내부 이송 중 사라졌다는 기록이 남아 있다.'],
+['심연재림교 성문 의식 감청록','ABYSS-WIRE-2042-04','1급 기밀','심연재림교의 지하 예배 기록을 감청한 문서. 교단은 게이트를 ‘성문’, 폭주를 ‘계시’, 가이드를 ‘성체’로 부르며, 미등록 가이드를 이용해 휴면 게이트를 안정적으로 재개방하려 한 정황이 확인되었다. 감청 말미에는 출처 불명의 저주파 펄스가 기록되어 분석 중이다.'],
+['왕종 게이트 예비분류 문서','KING-GATE-PROT-00','최고기밀','왕종과 연결된 특수 게이트에 대한 예비 분류 문서. 일반 게이트와 달리, 왕종 게이트는 균열핵이 단순한 에너지원이 아니라 ‘의식 또는 기관’처럼 반응한다. 문서 말미에는 “파괴가 아닌 봉인 우선”이라는 붉은 경고 문구가 반복 기재되어 있다.'],
+['S급 심층가이딩 사고','GUIDE-DEEP-2042-0312','1급 기밀','응급 심층가이딩 임무 중 무한가이딩 능력을 보유한 S급 가이드 2인이 대상 센티넬의 폭주도를 단시간에 낮추기 위해 연속 가이딩을 실시한 사고 기록. 안정화 기준을 넘긴 뒤에도 파장 동조가 지속되면서 센티넬의 체내 펄스와 신경계 에너지가 과도하게 소모되어 전신 탈진과 일시적 의식 소실이 발생했다. 대상자는 회복했으나, 시타델은 가이드들에게 임무 정지와 징계를 내리고 응급 심층가이딩 시 출력 하한선 감시, 단계별 중단 기준, 제3자 생체 모니터링을 의무화했다.']
+];
+const welfare=[['공무원 신분','기본급, 위험수당, 작전수당, 연금 등 안정적인 처우를 받는다.'],['폭주 사고 보호','정식 작전 중 발생한 폭주나 능력 누출은 개인 범죄가 아닌 특수재난으로 처리될 수 있다.'],['전담 의료 지원','펄스 신경계 손상, 침식 후유증, 폭주 후유증 치료를 국가가 지원한다.'],['가이딩 지원','A급 이상 센티넬은 전담 또는 임시 가이드 배정을 우선적으로 받을 수 있다.'],['가이드 소진 보호','가이딩 한도, 회복 휴가, 소진 검사 등으로 과도한 업무를 제한한다.'],['가족 보호','고위험 요원의 가족에게 신원 보호, 거주지 보안, 의료·학자금 지원이 제공된다.'],['사망·실종 보상','작전 중 사망, 실종, 침식 불가역 판정 시 유족 보상과 연금이 지급된다.'],['은퇴 후 보장','장기 복무자는 연금, 재활 지원, 교관직·행정직 전환 기회를 얻을 수 있다.']];
+const lumenPeople={
+chayurim:{name:'차유림',img:'차유림.png',rows:[['등급','A급 센티넬'],['나이','46세'],['성별','여성'],['능력','정신지배(특수계)'],['생일','8월 21일'],['결속 가이드','없음']]},
+jungyoona:{name:'정윤아',img:'정윤아.png',rows:[['등급','A급 센티넬'],['나이','41세'],['성별','여성'],['능력','화염(자연계)'],['생일','5월 12일'],['결속 가이드','없음']]},
+livia:{name:'리비아',img:'리비아.png',rows:[['등급','B급 센티넬'],['나이','53세'],['성별','여성'],['능력','초인계(순간이동)'],['생일','6월 14일'],['결속 가이드','없음']]},
+shinjia:{name:'신지아',img:'신지아.jpg',rows:[['등급','C급 가이드'],['나이','25세'],['성별','여성'],['능력','안정형'],['결속 센티넬','없음']]},
+jangjiwoo:{name:'장지우',img:'장지우.png',rows:[['등급','A급 가이드'],['나이','20세'],['성별','여성'],['능력','증폭형'],['결속 센티넬','없음']]}
+};
+const honghwaPeople={
+meilin:{name:'진메이린',img:'진메이린_프로필.png',rows:[['등급','S급 가이드'],['나이','불명'],['성별','여성'],['능력','무한가이딩'],['생일','3월 3일'],['결속 센티넬','없음']]},
+hao:{name:'진하오',img:'진하오_프로필.png',rows:[['등급','S급 가이드'],['나이','불명'],['성별','남성'],['능력','무한가이딩'],['생일','3월 3일'],['결속 센티넬','없음']]}
+};
+function $(id){return document.getElementById(id)}
+function enterSite(){ $('intro').classList.add('hidden'); tryAutoPlayBgm(); }
+let currentPage=null; const pageHistory=[];
+function showPage(id,fromBack=false){
+  if(currentPage && currentPage!==id && !fromBack){pageHistory.push(currentPage);}
+  currentPage=id;
+  const app=$('app');
+  app.classList.add('switching');
+  setTimeout(()=>{
+    document.querySelectorAll('.page').forEach(p=>p.style.display='none');
+    const page=$('page-'+id);
+    page.style.display='block';
+    page.style.animation='pageIn .42s cubic-bezier(.22,.68,0,1.2) both';
+    document.querySelectorAll('.navgrid button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+    window.scrollTo({top:0,behavior:'smooth'});
+    closeMenu();
+    setTimeout(()=>{app.classList.remove('switching');initReveal();},110);
+  },320);
+}
+function goBack(){
+  if($('keyword-detail-section') && $('keyword-detail-section').style.display!=='none' && currentPage==='keywords'){hideKeyword();return;}
+  const prev=pageHistory.pop();
+  if(prev){showPage(prev,true);}
+}
+function openMenu(){$('menu').classList.add('open')}function closeMenu(){$('menu').classList.remove('open')}
+function rowsHTML(rows){return '<div class="modal-table">'+rows.map(r=>`<div class="row"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')+'</div>'}
+function openPerson(data){openModal(data.name,`<img class="modal-portrait" src="${data.img}" alt="${data.name}"><h2>${data.name}</h2><div class="role">${data.rows[0][1]}</div>${rowsHTML(data.rows)}`)}
+function openOutfit(type){
+  const data={
+    sentinel:{
+      title:'센티넬 작전복',
+      img:'시타델센티넬복장.png',
+      body:['센티넬 작전복은 고출력 펄스 방출과 게이트 내부 전투를 견디기 위해 제작된 전투형 장비다.','기본적으로 내열·방검·충격 흡수 기능을 갖추며, 착용자의 능력 계열에 따라 보강 파츠가 달라진다.','작전복은 단순한 제복이 아니라, 착용자의 폭주를 감지하고 생존율을 높이는 전투용 안전장치다.']
+    },
+    guide:{
+      title:'가이드 작전복',
+      img:'시타델가이드복장.png',
+      body:['가이드 작전복은 센티넬 보조와 파장 안정화를 위해 제작된 지원형 장비다.','직접 전투보다 펄스 감지, 과부하 방지, 정신오염 차단, 긴급 가이딩을 중심으로 설계된다.','작전복은 가이드를 보호하기 위한 장비이자, 현장의 센티넬을 안정시키기 위한 파장 조율 장치다.']
+    }
+  }[type];
+  openModal(data.title,`<img class="modal-outfit-img" src="${data.img}" alt="${data.title}"><h2>${data.title}</h2>${data.body.map(p=>`<p>${p}</p>`).join('')}`);
+}
+function openModal(title,body,theme=''){const m=$('modal');$('modal-title').textContent=title;$('modal-body').innerHTML=body;m.className='modal open '+theme}
+function closeModal(){$('modal').className='modal'}
+function renderKeywords(){ $('keyword-buttons').innerHTML=keywordCards.map(k=>`<button class="chipbtn" onclick="showPage('keywords');setTimeout(()=>openKeyword('${k[0]}'),240)"><b>${k[1]}</b><span>${k[2]}</span></button>`).join(''); $('keyword-list').innerHTML=keywordCards.map(k=>`<button class="entry" onclick="openKeyword('${k[0]}')"><span class="mark">◇</span><div><b>${k[1]}</b><small>${k[2]}</small></div></button>`).join('') }
+function renderKeywordSection(s){
+  const title=s[0];
+  const values=s[1];
+  const freeImgs=values.filter(x=>String(x).startsWith('__FREEIMAGE__:')).map(x=>`<img class="keyword-free-img" src="${String(x).replace('__FREEIMAGE__:','')}" alt="${title}">`).join('');
+  if(freeImgs){return freeImgs;}
+  const imgs=values.filter(x=>String(x).startsWith('__IMAGE__:')).map(x=>`<img class="outfit-img" src="${String(x).replace('__IMAGE__:','')}" alt="${title}">`).join('');
+  const notes=values.filter(x=>String(x).startsWith('__NOTE__:')).map(x=>String(x).replace('__NOTE__:',''));
+  const texts=values.filter(x=>!String(x).startsWith('__IMAGE__:')&&!String(x).startsWith('__FREEIMAGE__:')&&!String(x).startsWith('__NOTE__:'));
+  const tableTitles=['능력 계열','능력 유형','가이딩','가이딩 방식','결속 방식','특징','등급'];
+  if(title==='전리품'){
+    const rows=texts.map(x=>{
+      const raw=String(x);
+      const idx=raw.indexOf(':');
+      const item=idx>=0?raw.slice(0,idx).trim():raw;
+      const rest=idx>=0?raw.slice(idx+1).trim():'';
+      const parts=rest.split(' / ');
+      const desc=parts[0]||'';
+      const use=(parts[1]||'').replace('에 활용','').trim();
+      return `<div class="loot-row"><b>${item}</b><span>${desc}</span><span>${use}</span></div>`;
+    }).join('');
+    return `<div class="card" style="margin-top:12px"><h3>${title}</h3>${imgs}<div class="loot-table"><div class="loot-row"><b>부산물</b><span>설명</span><span>활용</span></div>${rows}</div>${notes.map(n=>`<p class="kw-note">${n}</p>`).join('')}</div>`;
+  }
+  if(title==='가이드 과부하' || title==='폭주 단계'){
+    const rows=texts.map(x=>{
+      const raw=String(x);
+      const idx=raw.indexOf(':');
+      const headRaw=idx>=0?raw.slice(0,idx).trim():raw;
+      const body=idx>=0?raw.slice(idx+1).trim():'';
+      const m=headRaw.match(/^(.*?)\s*\((\d+%)\)$/);
+      const head=m?m[1].trim():headRaw;
+      const percent=m?m[2]:'';
+      return `<div class="stage-row"><b>${head}</b><span class="stage-percent">${percent}</span><span>${body}</span></div>`;
+    }).join('');
+    return `<div class="card" style="margin-top:12px"><h3>${title}</h3>${imgs}<div class="stage-table">${rows}</div>${notes.map(n=>`<p class="kw-note">${n}</p>`).join('')}</div>`;
+  }
+  if(tableTitles.includes(title)){
+    const rows=texts.map(x=>{
+      const raw=String(x);
+      const idx=raw.indexOf(':');
+      const head=idx>=0?raw.slice(0,idx).trim():raw;
+      const body=idx>=0?raw.slice(idx+1).trim():'';
+      return `<div class="${title==='능력 계열' || title==='능력 유형' ? 'kw-table-row' : 'rich-table-row'}"><b>${head}</b><span>${body}</span></div>`;
+    }).join('');
+    const wrapClass=(title==='능력 계열' || title==='능력 유형') ? 'kw-table' : 'rich-table';
+    return `<div class="card" style="margin-top:12px"><h3>${title}</h3>${imgs}<div class="${wrapClass}">${rows}</div>${notes.map(n=>`<p class="kw-note">${n}</p>`).join('')}</div>`;
+  }
+  return `<div class="card" style="margin-top:12px"><h3>${title}</h3>${imgs}${texts.length?`<ul class="info-list">${texts.map(x=>`<li>${x}</li>`).join('')}</ul>`:''}${notes.map(n=>`<p class="kw-note">${n}</p>`).join('')}</div>`;
+}
+function openKeyword(id){
+  const d=keywordDetails[id];
+  const list=$('keyword-list');
+  list.classList.add('keyword-list-fade');
+  setTimeout(()=>{
+    $('keyword-detail-section').style.display='block';
+    list.style.display='none';
+    list.classList.remove('keyword-list-fade');
+    $('keyword-detail').className='keyword-detail-anim';
+    $('keyword-detail').innerHTML=`<button class="back" onclick="hideKeyword()">← 키워드 목록</button><div class="section-head"><div class="label">${d.sub}</div><h2>${d.title}</h2></div>${d.body.map(p=>`<p class="desc">${p}</p>`).join('')}${d.sections.map(renderKeywordSection).join('')}`;
+    window.scrollTo({top:0,behavior:'smooth'});
+  },260)
+}
+function hideKeyword(){$('keyword-detail-section').style.display='none';$('keyword-detail').className='';$('keyword-list').style.display='grid'}
+let pulseLightTarget={x:window.innerWidth*0.5,y:window.innerHeight*0.18};
+let pulseLightNow={x:pulseLightTarget.x,y:pulseLightTarget.y};
+window.addEventListener('mousemove',e=>{pulseLightTarget.x=e.clientX;pulseLightTarget.y=e.clientY});
+window.addEventListener('touchstart',()=>{pulseLightTarget.x=window.innerWidth*0.5;pulseLightTarget.y=window.innerHeight*0.18},{passive:true});
+function animatePulseLight(){
+  pulseLightNow.x+=(pulseLightTarget.x-pulseLightNow.x)*0.045;
+  pulseLightNow.y+=(pulseLightTarget.y-pulseLightNow.y)*0.045;
+  const waveX=pulseLightNow.x+Math.sin(Date.now()/900)*18;
+  const waveY=pulseLightNow.y+Math.cos(Date.now()/1100)*12;
+  document.documentElement.style.setProperty('--mx',pulseLightNow.x+'px');
+  document.documentElement.style.setProperty('--my',pulseLightNow.y+'px');
+  document.documentElement.style.setProperty('--mx2',waveX+'px');
+  document.documentElement.style.setProperty('--my2',waveY+'px');
+  requestAnimationFrame(animatePulseLight);
+}
+animatePulseLight();
+function renderWorld(){ $('timeline').innerHTML=timeline.map(t=>`<div class="tl"><div class="year">${t[0]}</div><h3>${t[1]}</h3><p>${t[2]}</p></div>`).join(''); $('home-factions').innerHTML=factions.map(f=>`<button class="faction-mini" onclick="showPage('${f[0]}')"><img src="${f[3]}" alt="${f[1]}"><b>${f[1]}</b><span>${f[2]}</span></button>`).join('') }
+function factionHero(bg,emblem,en,name,copy,cls=''){return `<div class="faction-hero ${cls}"><img class="bg" src="${bg}"><div class="faction-head"><div class="faction-title"><img src="${emblem}"><div><small>${en}</small><h1>${name}</h1></div></div><p class="faction-copy">${copy}</p></div></div>`}
+function renderCitadel(){ $('page-citadel').innerHTML=`${factionHero('시타델배경.png','시타델_엠블러.png','CITADEL','시타델','대한민국의 펄스를 총괄 관리하는 국가특수재난본부. 질서 유지의 얼굴이자, 모든 펄스를 통제하는 관리 체계의 중심이다.')}<section><div class="section-head"><div class="label">BASIC INFO</div><h2>기본정보</h2></div><div class="card"><div class="mini-table">${rowsHTML([['소재지','서울 용산'],['소속','국가특수재난본부'],['직원수','약 1,500명'],['관리대상','펄스, 게이트, 이계종, 센티넬, 가이드, 민간 길드']]).replace('modal-table','mini-table')}</div></div></section><section><div class="section-head"><div class="label">REGULATION</div><h2>기본규정</h2></div><div class="card"><div class="rules">${['능력 발현자는 필수로 국가기관에서 검사를 받아야 한다.','능력 발현자가 반드시 공무원이 될 필요는 없다.','민간 길드는 국가 허가를 받아 운영할 수 있다.','전담 가이드는 원칙적으로 A급 이상 센티넬에게 우선 배정된다.','미보고 발현, 불법 능력 사용, 불법 가이딩, 강제 각인은 처벌 대상이다.','민간 길드는 정기 감사와 불시 감찰 대상이다.'].map(x=>`<div class="rule">${x}</div>`).join('')}</div></div></section><section><div class="section-head"><div class="label">DEPARTMENTS</div><h2>주요부서</h2></div><div>${depts.map(d=>`<div class="dept-card"><h3>〈${d[0]}〉 <small>${d[1]}</small></h3><p>${d[2]}</p>${d[3]?`<button class="person-card" onclick="openPerson(citadelPeople.${d[3]})"><img src="${citadelPeople[d[3]].img}"><div><span class="rank">${citadelPeople[d[3]].rows[0][1]}</span><div class="name">${citadelPeople[d[3]].name}</div></div></button>`:''}</div>`).join('')}</div></section><section><div class="section-head"><div class="label">UNIFORM</div><h2>복장정보</h2><p>시타델 소속 센티넬과 가이드의 표준 작전복.</p></div><div class="card"><h3>센티넬 작전복</h3><button class="outfit-click" onclick="openOutfit('sentinel')"><img class="outfit-img" src="시타델센티넬복장.png" alt="시타델 센티넬 복장"></button><h3 style="margin-top:16px">가이드 작전복</h3><button class="outfit-click" onclick="openOutfit('guide')"><img class="outfit-img" src="시타델가이드복장.png" alt="시타델 가이드 복장"></button></div></section><section><div class="section-head"><div class="label">WELFARE</div><h2>시타델 복지</h2><p>〈시타델〉은 국가기관으로서 발현자의 장기 복무와 생존을 보장하는 안정적인 안전망을 제공합니다.</p></div><div class="card"><div class="mini-table">${welfare.map(w=>`<div class="row"><b>${w[0]}</b><span>${w[1]}</span></div>`).join('')}</div></div></section><section><div class="section-head"><div class="label">CLASSIFIED</div><h2>기밀자료</h2><p>시타델 내부망에 보관된 비공개 문서 일부. 일반 공개용 자료가 아니며, 게이트 사고·특수작전·등급 기준·미확인 세력 관련 내용이 포함되어 있다.</p></div>${citadelDocs.map((d,i)=>`<button class="docbtn" onclick="openDoc(${i})"><div class="doc-icon">▤</div><div><b>${d[0]}</b><span>${d[1]} · ${d[2]}</span></div></button>`).join('')}<p class="desc">※ 본 자료는 시타델 내부 보안등급에 따라 일부 내용이 말소 처리되었습니다.</p></section>` }
+function openDoc(i){const d=citadelDocs[i];openModal(d[0],`<p class="summary">${d[3]}</p>${rowsHTML([['문서명',d[0]],['문서번호',d[1]],['보안등급',d[2]],['요약',d[3]]])}<p class="seal">※ 본 자료는 시타델 내부 보안등급에 따라 일부 내용이 말소 처리되었습니다.</p>`)}
+function renderOmen(){ $('page-omen').innerHTML=`<div class="omen-theme">${factionHero('오멘배경_1_.png','오멘_엠블럼.png','OMEN','오멘','선택받지 못한 인간의 분노를 구원으로 가장하여 펄스와 게이트 코어를 이용해 인간에게 강제로 초상성을 부여하려는 초상진화조직.','omen-theme')}<section><div class="section-head"><div class="label">IDEOLOGY</div><h2>사상</h2></div><div class="card"><div class="rules">${['선택받은 자만 살아남는 세계는 실패했다.','발현은 특권이 되어서는 안 된다.','인간은 보호받는 존재가 아니라 진화해야 할 존재다.','괴물화도 구원의 한 방식이다.','등급은 족쇄다.'].map(x=>`<div class="rule">${x}</div>`).join('')}</div></div></section><section><div class="section-head"><div class="label">METHOD</div><h2>전투 방식</h2></div>${['유물 이식','변칙체 사육','강제변이','게이트 오염','정신오염','초상 도핑'].map(x=>`<div class="dept-card"><h3>${x}</h3><p>이세계 부산물과 펄스 잔류파를 이용해 인간의 한계를 강제로 넘기려는 방식.</p></div>`).join('')}</section></div>` }
+function renderAbyss(){ $('page-abyss').innerHTML=`<div class="abyss-theme">${factionHero('재림교배경_1_.png','심연재림교_엠블럼.png','ABYSS RETURN CHURCH','심연재림교','게이트의 침공을 신의 재림으로 믿는 종말론적 교단. 고통받는 사람에게 의미를 주지만, 그 끝은 인간을 현실에서 떼어내 제물로 바치는 것이다.','abyss-theme')}<section><div class="section-head"><div class="label">DOCTRINE</div><h2>교리</h2></div><div class="card"><div class="rules">${['게이트는 신이 여는 성문이다.','이계종은 신의 사자다.','침식은 저주가 아니라 축복이다.','센티넬의 폭주는 계시다.','가이드는 성문을 유지하는 성체다.'].map(x=>`<div class="rule">${x}</div>`).join('')}</div></div></section><section><div class="section-head"><div class="label">METHOD</div><h2>전투 방식</h2></div>${['게이트 개방 의식','침식 세례','성유물 사용','순교 폭주 유도'].map(x=>`<div class="dept-card"><h3>${x}</h3><p>집단 의식, 성유물, 펄스 잔류파를 이용해 현실의 경계를 약화시킨다.</p></div>`).join('')}</section><section><div class="section-head"><div class="label">COSTUME</div><h2>복장정보</h2><p>고위 신도복과 일반 신도복의 기본 형태.</p></div><img class="outfit-img" src="심연재림교복장.png" alt="심연재림교 복장"></section></div>` }
+function renderGuild(){ $('page-guild').innerHTML=`<section><div class="section-head"><div class="label">PRIVATE GUILD</div><h2>길드</h2><p>국가 허가를 받아 게이트 임무, 센티넬 브랜딩, 가이딩 서비스, 물류, 의료, 경호, 방송, 광고 사업을 운영하는 민간 조직.</p></div><div class="guild-list"><button class="guild-card-btn" onclick="openLumen()"><h3>루멘 <span class="tag">LUMEN</span></h3><p class="desc">센티넬 브랜딩과 게이트 임무 위탁 수행을 동시에 운영하는 민간 길드.</p><div class="guild-tags"><span>서울 강남구</span><span>중견기업</span><span>약 200명</span></div></button><button class="guild-card-btn" onclick="openHonghwa()"><h3>홍화 <span class="tag">HONGHWA</span></h3><p class="desc">응급 심층 가이딩 전문 민간 길드</p><div class="guild-tags"><span>서울 용산구</span><span>2명</span></div></button>${Array.from({length:2}).map(()=>`<div class="guild-card-btn pending-guild"><p class="desc">추후 추가 예정</p></div>`).join('')}</div></section>` }
+function openLumen(){ $('page-guild').innerHTML=`<div class="faction-hero"><img class="bg" src="루멘배경.png"><div class="faction-head"><div class="faction-title"><img class="lumen-logo" src="루멘로고.png" alt="루멘 로고"><div><small>LUMEN</small><h1>루멘</h1></div></div><p class="faction-copy">센티넬 브랜딩과 게이트 임무 위탁 수행을 동시에 운영하는 국가공인 민간 길드. 게이트 공략 실적뿐 아니라 방송·광고·팬덤 산업에도 강점을 가진다.</p></div></div><section><button class="back" onclick="renderGuild()">← 길드 목록</button><div class="section-head"><div class="label">BASIC INFO</div><h2>기본정보</h2></div><div class="card"><div class="mini-table">${rowsHTML([['위치','서울 강남구 소재'],['규모','중견기업'],['직원수','약 200명'],['분야','게이트 임무 위탁 / 센티넬 브랜딩 / 방송·광고']]).replace('modal-table','mini-table')}</div></div><div class="section-head" style="margin-top:18px"><div class="label">UNIFORM</div><h2>복장정보</h2><p>루멘 현장 요원의 전투·임무용 복장.</p></div><img class="outfit-img" src="루멘전투복장.png" alt="루멘 전투복장"><h3 class="lumen-members-title">소속 센티넬</h3><div class="list-cards">${['chayurim','jungyoona','livia'].map(k=>{const p=lumenPeople[k];return `<button class="person-card" onclick="openPerson(lumenPeople.${k})"><img src="${p.img}"><div><span class="rank">${p.rows[0][1]}</span><div class="name">${p.name}</div></div></button>`}).join('')}</div><h3 class="lumen-members-title">소속 가이드</h3><div class="list-cards">${['shinjia','jangjiwoo'].map(k=>{const p=lumenPeople[k];return `<button class="person-card" onclick="openPerson(lumenPeople.${k})"><img src="${p.img}"><div><span class="rank">${p.rows[0][1]}</span><div class="name">${p.name}</div></div></button>`}).join('')}</div></section>`; window.scrollTo({top:0,behavior:'smooth'}) }
+function openHonghwa(){ $('page-guild').innerHTML=`<div class="faction-hero"><img class="bg" src="홍화_배경.png"><div class="faction-head"><div class="faction-title"><img class="lumen-logo" src="홍화로고.png" alt="홍화 로고"><div><small>HONGHWA</small><h1>홍화</h1></div></div><p class="faction-copy">오직 응급·심층 가이딩 임무만 수행하는 시타델 공인 응급 가이딩 전문 길드. 무한가이딩이 가능한 특수계 S급 남매가 2인조로 운영한다.</p></div></div><section><button class="back" onclick="renderGuild()">← 길드 목록</button><div class="section-head"><div class="label">BASIC INFO</div><h2>기본정보</h2></div><div class="card"><div class="mini-table">${rowsHTML([['위치','서울 용산구 소재'],['규모','5인 미만 사업장'],['직원수','2명'],['분야','응급가이딩']]).replace('modal-table','mini-table')}</div></div><h3 class="lumen-members-title">소속 가이드</h3><div class="list-cards">${['meilin','hao'].map(k=>{const p=honghwaPeople[k];return `<button class="person-card" onclick="openPerson(honghwaPeople.${k})"><img src="${p.img}"><div><span class="rank">${p.rows[0][1]}</span><div class="name">${p.name}</div></div></button>`}).join('')}</div></section>`; window.scrollTo({top:0,behavior:'smooth'}) }
+function renderNav(){const icons={world:'world',key:'key',cit:'cit',om:'om',abyss:'abyss',guild:'guild'}; const html=NAV.map(n=>`<button data-id="${n[0]}" onclick="showPage('${n[0]}')"><span class="nav-icon ${icons[n[2]]||'world'}"></span><span>${n[1]}</span></button>`).join(''); $('navgrid').innerHTML=html; $('drawer-nav').innerHTML=NAV.map(n=>`<button class="navitem" onclick="showPage('${n[0]}')"><span class="nav-icon ${icons[n[2]]||'world'}"></span>${n[1]}</button>`).join('')}
+function pickWeighted(items){const total=items.reduce((s,i)=>s+i[1],0);let r=Math.random()*total;for(const [v,w] of items){r-=w;if(r<=0)return v}return items[items.length-1][0]}
+function randomItem(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function measurePulse(){
+  const role=Math.random()<0.52?'센티넬':'가이드';
+  const rank=role==='센티넬'
+    ? pickWeighted([['D급',15],['C급',26],['B급',29],['A급',20],['S급',8],['SS급',2]])
+    : pickWeighted([['D급',16],['C급',28],['B급',31],['A급',19],['S급',6]]);
+  const sentinelPools={
+    '초인계':['근력','속도','내구','감각','재생','변이','적응'],
+    '자연계':['화염','수류','빙결','전격','풍압','대지','금속','식물','광휘','암영','음파','독성'],
+    '정신계':['염동','감응','환각','암시','기억','정신방벽','동조','예지','공포','침묵'],
+    '치유계':['재생촉진','정화','보호막','완충','활성','진통','봉합','침식해제','생명감지'],
+    '특수계':['공간','시간','중력','확률','복제','무효화','결계','소환','정보','계약','조율','침식','봉인','개념']
+  };
+  const sentinelRare=[['공명조율','조율계'],['능력차단','무효계'],['펄스봉인','봉인계'],['개념간섭','정신계']];
+  const guidePools=['안정형','완충형','동조형','방벽형','증폭형'];
+  let ability='';
+  if(role==='센티넬'){
+    if(rank==='SS급'){
+      const rare=randomItem(sentinelRare);
+      ability=`${rare[0]}·${rare[1]}`;
+    }else{
+      const cats=Object.keys(sentinelPools);
+      const cat=randomItem(cats);
+      ability=`${cat}·${randomItem(sentinelPools[cat])}`;
+      if(Math.random()<0.12){
+        const cat2=randomItem(cats.filter(c=>c!==cat));
+        ability+=` / ${cat2}·${randomItem(sentinelPools[cat2])}`;
+      }
+    }
+  }else{
+    ability=randomItem(guidePools);
+    if(Math.random()<0.12){
+      const second=randomItem(guidePools.filter(x=>x!==ability));
+      ability+=` / ${second}`;
+    }
+  }
+  const el=$('gen-result');
+  const scan=el.querySelector('.gen-scan');
+  const ring=el.querySelector('.pulse-ring');
+  const rtext=el.querySelector('.result-text');
+  const roleEl=$('gen-role');
+  const metaEl=$('gen-meta');
+  const rolePool=['센티넬','가이드','분석 중','공명 확인','파장 대조'];
+  const metaPool=['펄스 스캔 중','등급 산정 중','능력 계열 분석','가이드 적성 대조','신경계 반응 확인'];
+  rtext.style.opacity='0.35';
+  rtext.style.filter='blur(2px)';
+  rtext.style.transform='translateY(2px)';
+  scan.classList.remove('running');
+  ring.classList.remove('fire');
+  void scan.offsetWidth;
+  scan.classList.add('running');
+  ring.classList.add('fire');
+  let tick=0;
+  const flicker=setInterval(()=>{
+    roleEl.textContent=randomItem(rolePool);
+    metaEl.textContent=randomItem(metaPool);
+    tick++;
+    if(tick>7){clearInterval(flicker);}
+  },95);
+  setTimeout(()=>{
+    clearInterval(flicker);
+    scan.classList.remove('running');
+    ring.classList.remove('fire');
+    void ring.offsetWidth;
+    ring.classList.add('fire');
+    roleEl.textContent=role;
+    metaEl.textContent=`${rank} | ${ability.replaceAll(' / ',' | ')}`;
+    rtext.style.opacity='1';
+    rtext.style.filter='blur(0)';
+    rtext.style.transform='translateY(0)';
+  },920);
+}
+function render(){renderKeywords();renderWorld();renderCitadel();renderOmen();renderAbyss();renderGuild();renderNav();showPage('world')}
+
+/* ── AUDIO PLAYER ── */
+const bgm=$('bgm');
+const playbtn=$('playbtn');
+const seek=$('seek');
+const volumeSlider=document.querySelector('.volume');
+function syncPlayButton(){
+  if(!bgm||!playbtn)return;
+  playbtn.textContent=bgm.paused?'▶':'❚❚';
+}
+function toggleAudio(){
+  if(!bgm)return;
+  if(bgm.paused){
+    const playPromise=bgm.play();
+    if(playPromise&&typeof playPromise.catch==='function'){
+      playPromise.catch(err=>{console.warn('BGM playback failed:',err);syncPlayButton();});
+    }
+  }else{
+    bgm.pause();
+  }
+  syncPlayButton();
+}
+function tryAutoPlayBgm(){
+  if(!bgm)return;
+  bgm.volume=0.1;
+  if(volumeSlider) volumeSlider.value='0.1';
+  const playPromise=bgm.play();
+  if(playPromise&&typeof playPromise.catch==='function'){
+    playPromise.catch(()=>{syncPlayButton();});
+  }
+  syncPlayButton();
+}
+function seekAudio(value){
+  if(!bgm||!isFinite(bgm.duration)||bgm.duration<=0)return;
+  bgm.currentTime=(Number(value)/100)*bgm.duration;
+}
+function setVolume(value){
+  if(!bgm)return;
+  const vol=Math.max(0,Math.min(1,Number(value)));
+  bgm.volume=vol;
+}
+function initAudio(){
+  if(!bgm)return;
+  bgm.volume=0.1;
+  if(volumeSlider) volumeSlider.value='0.1';
+  syncPlayButton();
+  bgm.addEventListener('play',syncPlayButton);
+  bgm.addEventListener('pause',syncPlayButton);
+  bgm.addEventListener('ended',syncPlayButton);
+  bgm.addEventListener('timeupdate',()=>{
+    if(seek&&isFinite(bgm.duration)&&bgm.duration>0){
+      seek.value=String((bgm.currentTime/bgm.duration)*100);
+    }
+  });
+  bgm.addEventListener('loadedmetadata',()=>{
+    if(seek) seek.value='0';
+  });
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&bgm.paused)tryAutoPlayBgm();});
+  setTimeout(tryAutoPlayBgm,350);
+}
+/* Initialized by renewal.js after all overrides are ready. */
+
+/* ── CSS 애니메이션 추가 ── */
+const extraCSS=document.createElement('style');
+extraCSS.textContent=`
+@keyframes pageIn{from{opacity:0;transform:translateY(18px);filter:blur(5px)}to{opacity:1;transform:none;filter:blur(0)}}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity 1.25s cubic-bezier(.22,.68,0,1),transform 1.25s cubic-bezier(.22,.68,0,1)}
+.reveal.visible{opacity:1;transform:none}
+`;
+document.head.appendChild(extraCSS);
+
+/* ── Intersection Observer — reveal ── */
+function initReveal(){
+  const els=document.querySelectorAll('section, .tl, .chipbtn, .entry, .faction-mini, .card, .soft-card, .dept-card, .docbtn, .person-card, .guild-card-btn');
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}
+    });
+  },{threshold:0.06,rootMargin:'0px 0px -30px 0px'});
+  els.forEach((el,i)=>{
+    if(!el.classList.contains('reveal')){el.classList.add('reveal');}
+    if(!el.classList.contains('visible')){
+      el.style.transitionDelay=(i%8)*0.04+'s';
+      io.observe(el);
+    }
+  });
+}
+setTimeout(initReveal, 300);
+</script>
+<script src="music-config.js?v=37"></script>
+<script src="renewal.js?v=37"></script>
+</body>
+</html>
