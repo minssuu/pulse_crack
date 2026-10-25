@@ -2,7 +2,6 @@
 const factionNames={world:'세계관',citadel:'시타델',omen:'오멘',abyss:'심연재림교',lumen:'루멘',honghwa:'홍화'};
 let entered=false, entering=false, audioWanted=false, audioContextKey='world', guildView=null;
 let navigationTimer, audioTimer, targetVolume=.1, activeSource='', activeTrack=null;
-const localTracks={};
 const reducedMotion=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const baseGuild=renderGuild, baseLumen=openLumen, baseHonghwa=openHonghwa;
 function applyTheme(key){document.body.dataset.theme=key;}
@@ -16,7 +15,7 @@ function enhancePage(page,key){
     nav.firstElementChild?.classList.add('active');page.querySelector('.faction-hero').after(nav);
   }
   page.querySelectorAll('img').forEach(img=>{if(!img.closest('.faction-hero,.hero'))img.loading='lazy';if(!img.hasAttribute('alt'))img.alt=img.closest('.person-card')?.querySelector('.name')?.textContent||'';});
-  if(!page.querySelector('.page-footer')){const footer=document.createElement('footer');footer.className='page-footer';footer.innerHTML='<img src="pulse-logo.png" alt="PULSE">SENTINEL × GUIDE · WORLD ARCHIVE';page.append(footer);}
+  if(!page.querySelector('.page-footer')){const footer=document.createElement('footer');footer.className='page-footer';footer.innerHTML='<img src="pulse-logo.png" alt="PULSE">';page.append(footer);}
 }
 renderGuild=function(){baseGuild();guildView=null;enhancePage($('page-guild'),'guild');if(currentPage==='guild'){applyTheme('world');selectTrack('world');initReveal();}};
 openLumen=function(){baseLumen();guildView='lumen';applyTheme('lumen');enhancePage($('page-guild'),'lumen');selectTrack('lumen');initReveal();};
@@ -42,14 +41,13 @@ enterSite=function(skip=false){
   setTimeout(()=>{entered=true;entering=false;$('intro').classList.add('hidden');$('intro').inert=true;$('app').inert=false;$('player').inert=false;document.body.style.overflow='';$('app').querySelector('.brand').focus({preventScroll:true});},skip||reducedMotion()?0:1350);
 };
 function safeText(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function trackFor(key){const t=localTracks[key]||window.PULSE_MUSIC[key];if(t?.src)return {...t,fallback:false};return {...(localTracks.world||window.PULSE_MUSIC.world),fallback:true};}
-function updateTrackLabel(track){$('track-context').textContent=factionNames[audioContextKey]+' · '+(track.fallback?'공통 BGM':'BGM');}
-function playCurrent(){if(!audioWanted)return;bgm.play().catch(()=>{$('track-context').textContent='재생 버튼을 눌러 음악을 시작하세요';syncPlayButton();});}
+function trackFor(key){const t=window.PULSE_MUSIC[key];if(t?.src)return {...t,fallback:false};return {...window.PULSE_MUSIC.world,fallback:true};}
+function playCurrent(){if(!audioWanted)return;ensureSpectrumAudio();bgm.play().catch(()=>{$('audio-status').textContent='재생 버튼을 눌러 음악을 시작하세요';syncPlayButton();});}
 function selectTrack(key,force=false){
-  audioContextKey=key;const track=trackFor(key);activeTrack=track;updateTrackLabel(track);
+  audioContextKey=key;const track=trackFor(key);activeTrack=track;$('audio-status').textContent='';
   clearInterval(audioTimer);
   if(track.src===activeSource&&!force){bgm.volume=targetVolume;return;}
-  const change=()=>{bgm.pause();bgm.src=track.src;activeSource=track.src;seek.value='0';bgm.load();bgm.volume=targetVolume;if(audioWanted)playCurrent();syncPlayButton();};
+  const change=()=>{bgm.pause();bgm.src=track.src;activeSource=track.src;bgm.load();bgm.volume=targetVolume;if(audioWanted)playCurrent();syncPlayButton();};
   if(!bgm.paused&&entered&&!reducedMotion()){const start=bgm.volume;let step=0;audioTimer=setInterval(()=>{bgm.volume=Math.max(0,start*(1-(++step/8)));if(step>=8){clearInterval(audioTimer);change();}},30);}else change();
 }
 syncPlayButton=function(){playbtn.textContent=bgm.paused?'▶':'Ⅱ';playbtn.setAttribute('aria-label',bgm.paused?'배경음악 재생':'배경음악 일시정지');playbtn.setAttribute('aria-pressed',String(!bgm.paused));};
@@ -60,20 +58,88 @@ initAudio=function(){
   try{const saved=localStorage.getItem('pulse-volume');if(saved!==null&&Number.isFinite(+saved))targetVolume=Math.max(0,Math.min(1,+saved));}catch{}
   bgm.volume=targetVolume;volumeSlider.value=String(targetVolume);syncPlayButton();
   for(const event of ['play','pause','ended'])bgm.addEventListener(event,syncPlayButton);
-  bgm.addEventListener('timeupdate',()=>{if(Number.isFinite(bgm.duration)&&bgm.duration>0)seek.value=String(bgm.currentTime/bgm.duration*100);});
-  bgm.addEventListener('error',()=>{const fallback=window.PULSE_MUSIC.world;if(activeSource!==fallback.src){activeSource=fallback.src;bgm.src=fallback.src;bgm.load();$('track-context').textContent='음원을 불러올 수 없어 공통 BGM 재생';if(audioWanted)playCurrent();}else{$('track-context').textContent='음원 재생 실패 · 음악 설정을 확인하세요';}});
+  initSpectrum();
+  bgm.addEventListener('error',()=>{const fallback=window.PULSE_MUSIC.world;if(activeSource!==fallback.src){activeSource=fallback.src;bgm.src=fallback.src;bgm.load();$('audio-status').textContent='음원을 불러올 수 없어 공통 BGM 재생';if(audioWanted)playCurrent();}else{$('audio-status').textContent='음원을 재생할 수 없습니다.';}});
 };
-let musicDB;
-function getDB(){if(!musicDB)musicDB=new Promise((resolve,reject)=>{const request=indexedDB.open('pulse-soundtracks-v36',1);request.onupgradeneeded=()=>request.result.createObjectStore('tracks',{keyPath:'key'});request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});return musicDB;}
-async function dbWrite(key,record){const db=await getDB();await new Promise((resolve,reject)=>{const tx=db.transaction('tracks','readwrite');record?tx.objectStore('tracks').put({key,...record}):tx.objectStore('tracks').delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);});}
-async function restoreTracks(){try{const db=await getDB();const records=await new Promise((resolve,reject)=>{const r=db.transaction('tracks').objectStore('tracks').getAll();r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});for(const r of records)localTracks[r.key]={src:URL.createObjectURL(r.file),title:r.title};selectTrack(audioContextKey);}catch{/* local files and restricted storage remain playable for this session */}}
-function openMusicSettings(){closeMenu();openModal('세력별 배경음악',`<p>페이지를 이동하면 해당 세력의 음악으로 전환됩니다. 별도 음원이 없으면 공통 BGM을 재생합니다.</p><p>여기서 선택한 음악은 <strong>현재 브라우저에만 저장</strong>됩니다. 방문자에게 들려줄 음원은 사이트 파일에 추가해 주세요.</p><div id="music-message" role="status"></div>${Object.entries(factionNames).map(([key,name])=>`<div class="sound-slot"><label for="music-${key}">${name}</label><small id="music-name-${key}">${safeText(localTracks[key]?.title||(window.PULSE_MUSIC[key]?.src?window.PULSE_MUSIC[key].title:'공통 BGM 사용'))}</small><input id="music-${key}" type="file" accept="audio/*,.mp3,.wav,.ogg,.m4a" onchange="setLocalTrack('${key}',this)"><button class="sound-reset" onclick="resetLocalTrack('${key}')">기본 설정으로</button></div>`).join('')}`);}
-async function setLocalTrack(key,input){const file=input.files[0];if(!file)return;if(!file.type.startsWith('audio/')&&!/\.(mp3|wav|ogg|m4a|aac|flac)$/i.test(file.name)){$('music-message').textContent='오디오 파일을 선택해 주세요.';return;}if(file.size>80*1024*1024){$('music-message').textContent='80MB 이하의 음원을 선택해 주세요.';return;}
-  const old=localTracks[key];localTracks[key]={src:URL.createObjectURL(file),title:file.name.replace(/\.[^.]+$/,'')};$('music-name-'+key).textContent=localTracks[key].title;
-  try{await dbWrite(key,{file,title:localTracks[key].title});$('music-message').textContent='이 브라우저에 음악을 저장했어요.';}catch{$('music-message').textContent='저장 공간을 사용할 수 없어 이번 접속에서만 재생됩니다.';}
-  if(audioContextKey===key||activeTrack?.fallback)selectTrack(audioContextKey,true);if(old)setTimeout(()=>URL.revokeObjectURL(old.src),1000);
+// One audio graph per media element; frequency bars are purely decorative.
+let spectrumContext, spectrumSource, spectrumAnalyser, spectrumBins;
+let spectrumFrame=0, spectrumCanvas, spectrumPaint, spectrumWidth=0, spectrumHeight=0;
+let spectrumColor='136,220,225';
+const spectrumLevels=new Float32Array(40);
+function ensureSpectrumAudio(){
+  const AudioContext=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContext)return;
+  try{
+    if(!spectrumContext){
+      spectrumContext=new AudioContext();
+      spectrumAnalyser=spectrumContext.createAnalyser();
+      spectrumAnalyser.fftSize=2048;
+      spectrumAnalyser.smoothingTimeConstant=.8;
+      spectrumAnalyser.minDecibels=-90;
+      spectrumAnalyser.maxDecibels=-30;
+      spectrumBins=new Uint8Array(spectrumAnalyser.frequencyBinCount);
+      spectrumSource=spectrumContext.createMediaElementSource(bgm);
+      spectrumSource.connect(spectrumAnalyser);
+      spectrumAnalyser.connect(spectrumContext.destination);
+    }
+    if(spectrumContext.state==='suspended')spectrumContext.resume().catch(()=>{});
+  }catch{
+    // Preserve playback if this browser cannot supply an analyser.
+    if(spectrumSource){try{spectrumSource.disconnect();spectrumSource.connect(spectrumContext.destination);}catch{}}
+    spectrumAnalyser=null;
+  }
 }
-async function resetLocalTrack(key){const old=localTracks[key];delete localTracks[key];try{await dbWrite(key,null);$('music-message').textContent='기본 음악 설정으로 돌아갔어요.';}catch{$('music-message').textContent='이번 접속의 설정만 초기화했습니다.';}$('music-name-'+key).textContent=window.PULSE_MUSIC[key]?.src?window.PULSE_MUSIC[key].title:'공통 BGM 사용';selectTrack(audioContextKey,true);if(old)setTimeout(()=>URL.revokeObjectURL(old.src),1000);}
+function drawSpectrum(){
+  if(!spectrumPaint)return;
+  const w=spectrumWidth,h=spectrumHeight,mid=h/2;
+  spectrumPaint.clearRect(0,0,w,h);
+  const active=!bgm.paused&&!bgm.ended&&!bgm.muted&&bgm.volume>0&&spectrumAnalyser&&spectrumContext?.state==='running'&&!reducedMotion();
+  if(active)spectrumAnalyser.getByteFrequencyData(spectrumBins);
+  const step=w/spectrumLevels.length,barWidth=Math.max(1.5,Math.min(3,step*.48));
+  const glow=spectrumPaint.createLinearGradient(0,0,0,h);
+  glow.addColorStop(0,`rgba(${spectrumColor},.18)`);
+  glow.addColorStop(.5,`rgba(${spectrumColor},.95)`);
+  glow.addColorStop(1,`rgba(${spectrumColor},.18)`);
+  spectrumPaint.fillStyle=glow;
+  spectrumPaint.shadowColor=`rgba(${spectrumColor},.5)`;
+  spectrumPaint.shadowBlur=5;
+  for(let i=0;i<spectrumLevels.length;i++){
+    let level=0;
+    if(active){
+      // Logarithmic bands, low frequencies at left, highs at right.
+      const binHz=spectrumContext.sampleRate/spectrumAnalyser.fftSize;
+      const high=Math.min(16000,spectrumContext.sampleRate/2);
+      const lo=Math.max(1,Math.floor(45*Math.pow(high/45,i/40)/binHz));
+      const hi=Math.min(spectrumBins.length-1,Math.max(lo,Math.ceil(45*Math.pow(high/45,(i+1)/40)/binHz)));
+      let total=0;for(let b=lo;b<=hi;b++)total+=spectrumBins[b];
+      level=total/Math.max(1,hi-lo+1)/255;
+    }
+    spectrumLevels[i]=active?spectrumLevels[i]+(level-spectrumLevels[i])*.42:0;
+    const height=2+spectrumLevels[i]*(h-8);
+    spectrumPaint.globalAlpha=active?.95:.32;
+    spectrumPaint.fillRect(i*step+(step-barWidth)/2,mid-height/2,barWidth,height);
+  }
+  spectrumPaint.shadowBlur=0;spectrumPaint.globalAlpha=1;
+}
+function tickSpectrum(){spectrumFrame=0;drawSpectrum();if(!document.hidden&&!bgm.paused&&!bgm.ended&&!reducedMotion()&&spectrumAnalyser)spectrumFrame=requestAnimationFrame(tickSpectrum);}
+function refreshSpectrum(){cancelAnimationFrame(spectrumFrame);spectrumFrame=0;if(!document.hidden)tickSpectrum();}
+function initSpectrum(){
+  spectrumCanvas=$('audio-spectrum');spectrumPaint=spectrumCanvas?.getContext('2d');if(!spectrumPaint)return;
+  const resize=()=>{
+    const bounds=spectrumCanvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);
+    spectrumWidth=bounds.width;spectrumHeight=bounds.height;
+    spectrumCanvas.width=Math.round(bounds.width*dpr);spectrumCanvas.height=Math.round(bounds.height*dpr);
+    spectrumPaint.setTransform(dpr,0,0,dpr,0,0);drawSpectrum();
+  };
+  if(window.ResizeObserver)new ResizeObserver(resize).observe(spectrumCanvas);else window.addEventListener('resize',resize);
+  const theme=()=>{spectrumColor=getComputedStyle(document.body).getPropertyValue('--accent-rgb').trim()||'136,220,225';drawSpectrum();};
+  new MutationObserver(theme).observe(document.body,{attributes:true,attributeFilter:['data-theme']});
+  for(const event of ['play','pause','ended','emptied','volumechange'])bgm.addEventListener(event,refreshSpectrum);
+  document.addEventListener('visibilitychange',refreshSpectrum);
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',refreshSpectrum);
+  theme();resize();
+}
+
 // Dialog keyboard support and focus restoration.
 let returnFocus;
 const originalOpenModal=openModal,originalCloseModal=closeModal,originalOpenMenu=openMenu,originalCloseMenu=closeMenu;
@@ -83,5 +149,5 @@ openMenu=function(){returnFocus=document.activeElement;originalOpenMenu();docume
 closeMenu=function(){const wasOpen=$('menu').classList.contains('open');originalCloseMenu();document.body.classList.remove('modal-open');if(wasOpen)returnFocus?.focus?.({preventScroll:true});};
 document.addEventListener('keydown',e=>{if(!entered&&e.key==='Tab'){const a=$('intro').querySelector('.intro-skip'),b=$('intro').querySelector('.enter-btn');if(e.shiftKey&&document.activeElement===a){e.preventDefault();b.focus();}else if(!e.shiftKey&&document.activeElement===b){e.preventDefault();a.focus();}return;}const dialog=$('modal').classList.contains('open')?$('modal'):$('menu').classList.contains('open')?$('menu'):null;if(!dialog)return;if(e.key==='Escape'){closeModal();closeMenu();}if(e.key==='Tab'){const focus=[...dialog.querySelectorAll('button,input,a[href]')].filter(x=>!x.disabled);const first=focus[0],last=focus[focus.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
 $('app').inert=true;$('player').inert=true;document.body.style.overflow='hidden';
-render();initAudio();document.querySelectorAll('.page').forEach(p=>enhancePage(p,p.id.replace('page-','')));restoreTracks();
+render();initAudio();document.querySelectorAll('.page').forEach(p=>enhancePage(p,p.id.replace('page-','')));
 $('intro').querySelector('.enter-btn').focus({preventScroll:true});

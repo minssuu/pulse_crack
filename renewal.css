@@ -26,3 +26,35 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(-
 /* v36: no soundtrack names in the bottom player. */
 .track-label #track-title{display:none!important}
 .track-label small{font-size:11px;letter-spacing:.04em;margin-top:0;color:#c7c3d2}
+
+/* OMEN personnel: only supplied portraits; unassigned images stay empty. */
+.omen-person-card{min-height:132px;height:auto;padding:20px 24px;align-items:center}
+.omen-person-card .person-details{width:48%;display:block}
+.omen-person-card .name{font-size:21px;margin:0 0 7px}
+.omen-person-card .omen-code{display:block;color:var(--blue2);font-size:11px;line-height:1.6;word-break:keep-all}
+.omen-person-card .omen-number{display:block;color:var(--muted2);font-size:9px;letter-spacing:.05em;margin-top:6px}
+.omen-person-card .omen-portrait{object-position:50% 22%;background:transparent}
+.omen-person-card .portrait-empty{position:absolute;inset:0 auto 0 0;width:45%;z-index:-1;background:linear-gradient(115deg,rgba(169,118,218,.025),transparent)}
+.omen-person-card .person-details{position:relative;z-index:1}
+.modal-portrait-empty{height:160px;border:1px solid var(--line);border-radius:7px;margin-bottom:18px;background:rgba(255,255,255,.01)}
+.modal.omen-theme .modal-body h2{margin-bottom:18px}
+@media(max-width:360px){.omen-person-card{padding:18px;min-height:126px}.omen-person-card .person-details{width:51%}.omen-person-card .name{font-size:19px}.omen-person-card .omen-code{font-size:10px}}
+
+/* v39: compact, text-free playback controls. */
+.player-inner{gap:18px}
+.player .seek{position:static;flex:1;width:auto;min-width:0;height:3px;margin:0}
+.player .volume{flex:none;width:65px}
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+
+/* v40: a quiet live spectrum between the playback and volume controls. */
+.audio-spectrum{flex:1;min-width:0;height:38px;pointer-events:none;position:relative;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.audio-spectrum:before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),.12),transparent)}
+.audio-spectrum canvas{display:block;width:100%;height:38px}
+.citadel-person-card>div{width:49%;position:relative;z-index:1}
+.citadel-person-card .name{font-size:20px;word-break:keep-all;line-height:1.4}
+.citadel-portrait-empty{position:absolute;inset:0 auto 0 0;width:42%;background:linear-gradient(110deg,rgba(var(--accent-rgb),.025),transparent)}
+@media(max-width:360px){.citadel-person-card .name{font-size:18px}.player-inner{gap:12px}.player .volume{width:52px}}
+
+/* v41: readable classified records in each faction theme. */
+.docbtn>div:last-child{min-width:0}.docbtn b{line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}.modal.omen-theme .summary{color:var(--blue2)}
+.citadel-person-card img[src="citadel-sunghyun-v41.png"],.citadel-person-card img[src="citadel-noah-v41.png"]{object-position:50% 40%}
